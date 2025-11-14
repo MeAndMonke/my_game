@@ -40,7 +40,8 @@ public class Shader {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             FloatBuffer fb = stack.mallocFloat(16);
             matrix.get(fb);
-            glUniformMatrix4fv(glGetUniformLocation(program, name), false, fb);
+            int loc = glGetUniformLocation(program, name);
+            if (loc != -1) glUniformMatrix4fv(loc, false, fb);
         }
     }
 }
