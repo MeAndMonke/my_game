@@ -1,18 +1,22 @@
+package main;
+
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+
+import entity.Player;
 
 public class App {
 
     private static long window;
     private static int width = 800, height = 600;
-    private static Vector3f cameraPos = new Vector3f(0,0,0);
+    public static Vector3f cameraPos = new Vector3f(0,0,0);
     private static Vector3f cameraDir = new Vector3f(0,0,-1);
+
+    private static Player player;
 
     public static void main(String[] args) {
         initWindow();
@@ -34,7 +38,7 @@ public class App {
     }
 
     private static void run() {
-        // 1. Create shader
+
         String vertexShader = """
             #version 330 core
             layout(location = 0) in vec3 aPos;
@@ -62,9 +66,9 @@ public class App {
             in vec3 FragPos;
             in vec3 Normal;
 
-            uniform vec3 lightPos = vec3(10.0, 10.0, 10.0);
-            uniform vec3 lightColor = vec3(1.0, 1.0, 1.0);
-            uniform vec3 objectColor = vec3(1.0, 0.5, 0.5);
+            uniform vec3 lightPos;
+            uniform vec3 lightColor;
+            uniform vec3 objectColor;
 
             void main() {
                 // simple diffuse lighting
@@ -77,30 +81,38 @@ public class App {
                 FragColor = vec4(result, 1.0);
             }
         """;
-
+        
         Shader shader = new Shader(vertexShader, fragmentShader);
 
-        // 2. Load model
-        ModelHandler model = new ModelHandler("res/models/model.obj", shader);
-        model.setPosition(0, 0, -5);
-        model.setScale(1, 1, 1);
+        player = new Player(shader);
 
-        // 3. Render loop
+        // render loop
+        int fps = 0;
+        double fpsTimer = glfwGetTime();
+
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            Matrix4f projection = new Matrix4f().perspective((float)Math.toRadians(70f),
-                    width/(float)height, 0.01f, 1000f);
-            Matrix4f view = new Matrix4f().lookAt(cameraPos,
-                    new Vector3f(cameraPos).add(cameraDir), new Vector3f(0,1,0));
+            double currentTime = glfwGetTime();
 
-            model.render(view, projection);
+            fps++;
+            if (currentTime - fpsTimer >= 1.0) {
+                System.out.println("FPS: " + fps);
+                fps = 0;
+                fpsTimer += 1.0;
+            }
+
+            Matrix4f projection = new Matrix4f().perspective((float)Math.toRadians(70f), width/(float)height, 0.01f, 1000f);
+            Matrix4f view = new Matrix4f().lookAt(cameraPos, new Vector3f(cameraPos).add(cameraDir), new Vector3f(0,1,0));
+            Vector3f rotation = player.getRotation();
+            rotation.y += 10;
+            player.setRotation(rotation);
+            player.render(view, projection);
+
 
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
-
-        model.cleanup();
         glfwTerminate();
     }
 }

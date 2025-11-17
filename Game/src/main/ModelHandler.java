@@ -1,3 +1,5 @@
+package main;
+
 import org.lwjgl.assimp.*;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -108,13 +110,17 @@ public class ModelHandler {
                        (float)Math.toRadians(rotation.z))
             .scale(scale);
 
-        shader.setMatrix4f("model", model);
-        shader.setMatrix4f("view", view);
-        shader.setMatrix4f("projection", projection);
+        shader.setMat4("model", model);
+        shader.setMat4("view", view);
+        shader.setMat4("projection", projection);
 
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
+    }
+
+    public Vector3f getRotation() {
+        return new Vector3f(rotation);
     }
 
     public void cleanup() {
