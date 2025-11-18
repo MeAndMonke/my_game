@@ -2,74 +2,69 @@ package renderer;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.system.MemoryStack;
-import java.nio.FloatBuffer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import org.lwjgl.BufferUtils;
 
-import static org.lwjgl.opengl.GL11.GL_FALSE;
+import java.nio.FloatBuffer;
+
 import static org.lwjgl.opengl.GL20.*;
 
 public class Shader {
 
-    private int program;
+    private final int programId;
+    private final int vertexShaderId;
+    private final int fragmentShaderId;
+    private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
-    public Shader() {
+    public Shader(String vertexCode, String fragmentCode) {
+        vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vertexShaderId, vertexCode);
+        glCompileShader(vertexShaderId);
+        checkCompileErrors(vertexShaderId, "VERTEX");
 
-        String vertexSrc = loadFile("src/shaders/default.vert");
-        String fragmentSrc = loadFile("src/shaders/default.frag");
+        fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fragmentShaderId, fragmentCode);
+        glCompileShader(fragmentShaderId);
+        checkCompileErrors(fragmentShaderId, "FRAGMENT");
 
+        programId = glCreateProgram();
+        glAttachShader(programId, vertexShaderId);
+        glAttachShader(programId, fragmentShaderId);
+        glLinkProgram(programId);
+        checkCompileErrors(programId, "PROGRAM");
 
-        int vs = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vs, vertexSrc);
-        glCompileShader(vs);
-        checkCompile(vs);
-
-        int fs = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fs, fragmentSrc);
-        glCompileShader(fs);
-        checkCompile(fs);
-
-        program = glCreateProgram();
-        glAttachShader(program, vs);
-        glAttachShader(program, fs);
-        glLinkProgram(program);
-
-        if (glGetProgrami(program, GL_LINK_STATUS) == GL_FALSE)
-            throw new RuntimeException("Shader link error: " + glGetProgramInfoLog(program));
-
-        glDeleteShader(vs);
-        glDeleteShader(fs);
+        glDeleteShader(vertexShaderId);
+        glDeleteShader(fragmentShaderId);
     }
 
-    private void checkCompile(int shader) {
-        if (glGetShaderi(shader, GL_COMPILE_STATUS) == GL_FALSE)
-            throw new RuntimeException("Shader compile error: " + glGetShaderInfoLog(shader));
+    public void setVec3(String name, Vector3f vec) {
+        int loc = glGetUniformLocation(programId, name);
+        glUniform3f(loc, vec.x, vec.y, vec.z);
     }
 
-    public void bind() { glUseProgram(program); }
-    public void unbind() { glUseProgram(0); }
+    public void bind() {
+        glUseProgram(programId);
+    }
 
-    public void setVec3f(String name, Vector3f vec) {
-        int loc = glGetUniformLocation(program, name);
-        if (loc != -1) glUniform3f(loc, vec.x, vec.y, vec.z);
+    public void unbind() {
+        glUseProgram(0);
     }
 
     public void setMat4(String name, Matrix4f matrix) {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            FloatBuffer fb = stack.mallocFloat(16);
-            matrix.get(fb);
-            int loc = glGetUniformLocation(program, name);
-            if (loc != -1) glUniformMatrix4fv(loc, false, fb);
-        }
+        glUniformMatrix4fv(glGetUniformLocation(programId, name), false, matrix.get(matrixBuffer));
     }
 
-    public String loadFile(String filePath) {
-        try {
-            return new String(Files.readAllBytes(Paths.get(filePath)));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
+    public void setVec3(String name, float x, float y, float z) {
+        glUniform3f(glGetUniformLocation(programId, name), x, y, z);
+    }
+
+    private void checkCompileErrors(int id, String type) {
+        int success;
+        if (type.equals("PROGRAM")) {
+            success = glGetProgrami(id, GL_LINK_STATUS);
+            if (success == 0) System.err.println("ERROR::PROGRAM_LINKING_ERROR\n" + glGetProgramInfoLog(id));
+        } else {
+            success = glGetShaderi(id, GL_COMPILE_STATUS);
+            if (success == 0) System.err.println("ERROR::SHADER_COMPILATION_ERROR of type: " + type + "\n" + glGetShaderInfoLog(id));
         }
     }
 }
