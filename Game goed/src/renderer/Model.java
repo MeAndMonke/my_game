@@ -15,20 +15,23 @@ public class Model {
 
     private Shader shader;
     private Matrix4f modelMatrix;
+    private Texture texture;
+
 
     private Vector3f position;
     private Vector3f rotation;
     private float scale;
 
     private AIMesh mesh;
-    private int vao, vbo, vboNormal, ebo;
+    private int vao, vbo, vboNormal, ebo, vboTexCoords;
     private int vertexCount;
 
-    public Model(String path, Shader shader, Vector3f position, Vector3f rotation, float scale) {
+    public Model(String path, Shader shader, Vector3f position, Vector3f rotation, float scale, Texture texture) {
         this.shader = shader;
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
+        this.texture = texture;
 
         mesh = loadMesh(path);
         vertexCount = mesh.mNumFaces() * 3;
@@ -41,6 +44,7 @@ public class Model {
     private void setupMesh() {
         float[] vertices = extractVertices(mesh);
         float[] normals  = extractNormals(mesh);
+        float[] texCoords = extractTexCoords(mesh); // <--- extract UVs
         int[] indices    = extractIndices(mesh);
 
         vao = glGenVertexArrays();
@@ -60,6 +64,13 @@ public class Model {
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 3, GL_FLOAT, false, 3 * Float.BYTES, 0);
 
+        // texture coordinates
+        vboTexCoords = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vboTexCoords);
+        glBufferData(GL_ARRAY_BUFFER, texCoords, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(2); // matches 'layout(location = 2)' in shader
+        glVertexAttribPointer(2, 2, GL_FLOAT, false, 2 * Float.BYTES, 0);
+
         // indices
         ebo = glGenBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
@@ -68,17 +79,27 @@ public class Model {
         glBindVertexArray(0);
     }
 
+
     public void render(Matrix4f view, Matrix4f projection) {
         shader.bind();
+
         shader.setMat4("model", modelMatrix);
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 
+        if (texture != null) {
+            texture.bind(0); // bind texture unit 0
+            shader.setInt("textureSampler", 0); // tell shader which unit
+        }
+
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
+
         shader.unbind();
     }
+    
+
 
     public void setPosition(Vector3f pos) {
         this.position = pos;
@@ -139,4 +160,19 @@ public class Model {
         if (scene == null) throw new RuntimeException("Failed to load model: " + path);
         return AIMesh.create(scene.mMeshes().get(0));
     }
+
+    private float[] extractTexCoords(AIMesh mesh) {
+        float[] texCoords = new float[mesh.mNumVertices() * 2];
+        for (int i = 0; i < mesh.mNumVertices(); i++) {
+            if (mesh.mTextureCoords(0) != null) {
+                texCoords[i * 2]     = mesh.mTextureCoords(0).get(i).x();
+                texCoords[i * 2 + 1] = 1.0f - mesh.mTextureCoords(0).get(i).y(); // FLIP V
+            } else {
+                texCoords[i * 2] = 0f;
+                texCoords[i * 2 + 1] = 0f;
+            }
+        }
+        return texCoords;
+    }
+
 }

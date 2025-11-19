@@ -1,8 +1,7 @@
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL;
 
-import renderer.Model;
-import renderer.Shader;
+import renderer.*;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -23,7 +22,7 @@ public class App {
     private static void initWindow() {
         if (!glfwInit()) throw new IllegalStateException("Unable to initialize GLFW");
 
-        window = glfwCreateWindow(width, height, "LWJGL Game", 0, 0);
+        window = glfwCreateWindow(width, height, "Survival Game", 0, 0);
         if (window == 0) throw new RuntimeException("Failed to create window");
 
         glfwMakeContextCurrent(window);
@@ -31,7 +30,7 @@ public class App {
         GL.createCapabilities();
 
         glEnable(GL_DEPTH_TEST);
-        glClearColor(0.5f, 0.3f, 0.3f, 1f);
+        glClearColor(0.2f, 0.4f, 0.2f, 1f);
     }
 
     public static void main(String[] args) {
@@ -44,8 +43,8 @@ public class App {
         String vertexShaderCode = loadShaderSource("res/shaders/default.vert");
         String fragmentShaderCode = loadShaderSource("res/shaders/default.frag");
         Shader shader = new Shader(vertexShaderCode, fragmentShaderCode);
-        Model model = new Model("res/models/model.obj", shader, new Vector3f(0,0,-0.5f), new Vector3f(0,180,0), 1f);
-        
+        Model model = new Model("res/models/model.obj", shader, new Vector3f(0,0,-0.5f), new Vector3f(0,180,0), 1f, new Texture("res/textures/player.jpg"));
+        Model tree = new Model("res/models/tree.obj", shader, new Vector3f(2,0,-2f), new Vector3f(0,0,0), 1f, new Texture("res/textures/tree_texture.jpg"));
         
         shader.bind();
         shader.setVec3("lightPos", new Vector3f(10, 10, 10));
@@ -64,6 +63,7 @@ public class App {
 
             // Render the model
             model.render(viewMatrix, projectionMatrix);
+            tree.render(viewMatrix, projectionMatrix);
 
             glfwSwapBuffers(window);
             glfwPollEvents();

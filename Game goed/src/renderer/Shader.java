@@ -57,6 +57,10 @@ public class Shader {
         glUniform3f(glGetUniformLocation(programId, name), x, y, z);
     }
 
+    public void setInt(String name, int value) {
+        glUniform1i(glGetUniformLocation(programId, name), value);
+    }
+
     private void checkCompileErrors(int id, String type) {
         int success;
         if (type.equals("PROGRAM")) {

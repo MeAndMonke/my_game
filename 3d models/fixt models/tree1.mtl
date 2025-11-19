@@ -1,0 +1,12 @@
+# Blender 4.5.4 LTS MTL File: 'trees.blend'
+# www.blender.org
+
+newmtl DefaultMaterial
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd C:/my downloads/leerjaar2/projecten/opdracht 3 Java survival game/3d models/low-poly-pine-tree-pack-1/textures/20240418_175415.jpg
+map_d C:/my downloads/leerjaar2/projecten/opdracht 3 Java survival game/3d models/low-poly-pine-tree-pack-1/textures/20240418_175415.jpg
