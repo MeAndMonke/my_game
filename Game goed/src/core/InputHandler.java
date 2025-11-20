@@ -7,12 +7,10 @@ import java.util.Map;
 
 public class InputHandler {
 
-    private final long window;
     private final Map<Integer, Boolean> keyDown = new HashMap<>();
     private final Map<Integer, Boolean> mouseDown = new HashMap<>();
 
     public InputHandler(long window) {
-        this.window = window;
 
         glfwSetKeyCallback(window, (win, key, scancode, action, mods) -> {
             if (action == GLFW_PRESS) {

@@ -1,9 +1,0 @@
-{
-    "id": "stick",
-    "name": "Stick",
-    "description": "A common building material used in construction and crafting.",
-    "weight": 0.5,
-    "value": 0.5,
-    "rarity": "common",
-    "recipe": null
-}

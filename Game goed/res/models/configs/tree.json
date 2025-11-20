@@ -1,0 +1,6 @@
+{
+    "modelPath": "res/models/objects/tree.obj",
+    "collisionPath": "res/models/collision/tree.json",
+    "texturePath": "res/textures/tree_texture.jpg",
+    "scale": 1.2
+}

@@ -1,9 +1,0 @@
-{
-    "id": "log",
-    "name": "Log",
-    "description": "A piece of wood obtained from chopping down trees.",
-    "weight": 2.5,
-    "value": 1.5,
-    "rarity": "common",
-    "recipe": null
-}

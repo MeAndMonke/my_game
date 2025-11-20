@@ -1,0 +1,7 @@
+{
+    "modelPath": "res/models/objects/player.obj",
+    "collisionPath": "res/models/collision/player.json",
+    "texturePath": "res/textures/player_texture.jpg",
+    "scale": 1,
+    "speed": 1
+}

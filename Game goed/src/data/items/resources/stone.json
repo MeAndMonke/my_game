@@ -1,9 +1,0 @@
-{
-    "id": "stone",
-    "name": "Stone",
-    "description": "A common building material used in construction and crafting.",
-    "weight": 1.0,
-    "value": 1,
-    "rarity": "common",
-    "recipe": null
-}
