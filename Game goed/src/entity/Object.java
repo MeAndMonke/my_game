@@ -1,16 +1,12 @@
 package entity;
 
-import java.io.FileInputStream;
-
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import renderer.Model;
 import renderer.Shader;
-import renderer.Texture;
 
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import physics.CollisionBox;
 
 
 public class Object {
@@ -19,6 +15,8 @@ public class Object {
     private Vector3f position;
     private Vector3f rotation;
     private float scale;
+
+    public CollisionBox collisionBox;
 
 
     public Object(String configPath, Shader shader, Vector3f pos, Vector3f rot) {
@@ -30,21 +28,9 @@ public class Object {
     }
 
     private void loadConfigData(String configPath, Shader shader) {
-        try (FileInputStream fis = new FileInputStream(configPath)) {
-            JSONObject json = new JSONObject(new JSONTokener(fis));
-
-            String modelPath = json.getString("modelPath");
-            String texturePath = json.getString("texturePath");
-
-            this.scale = json.getFloat("scale");
-
-            this.model = new Model(modelPath, shader, position, rotation, scale, new Texture(texturePath));
-        } 
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.model = ConfigLoader.loadModel(configPath, shader, position, rotation);
+        this.collisionBox = ConfigLoader.loadCollisionBox(ConfigLoader.getCollisionPath(configPath), position);
     }
-
 
     public Vector3f getPosition() {
         return position;
@@ -68,6 +54,10 @@ public class Object {
 
     public void setScale(float scale) {
         this.scale = scale;
+    }
+
+    public CollisionBox getCollisionBox() {
+        return collisionBox;
     }
 
     public void render(Matrix4f view, Matrix4f projection) {

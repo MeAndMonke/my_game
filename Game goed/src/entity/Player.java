@@ -3,6 +3,7 @@ package entity;
 import org.joml.Vector3f;
 
 import core.InputHandler;
+import physics.CollisionHandler;
 import renderer.Shader;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -37,12 +38,21 @@ public class Player extends Entity {
 
         if (direction.length() > 0) {
             direction.normalize().mul(speed * deltaTime);
-            setPosition(getPosition().add(direction));
+            Vector3f newPos = new Vector3f(getPosition()).add(direction);
 
-            // Calculate rotation based on movement
-            Vector3f newRotation = getRotation(direction);
-            setRotation(newRotation);
+            collisionBox.setPosition(newPos);
+
+            boolean collision = CollisionHandler.checkCollision(collisionBox, App.getWorldObjectsCollisionBoxes());
+
+            if (!collision) {
+                setPosition(newPos);
+            } else {
+                collisionBox.setPosition(getPosition());
+            }
+
+            setRotation(getRotation(direction));
         }
+
     }
 
 }

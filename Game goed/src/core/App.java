@@ -16,7 +16,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.joml.Matrix4f;
-
+import java.util.List;
+import physics.CollisionBox;
 
 public class App {
     private static long window;
@@ -25,6 +26,8 @@ public class App {
     private static Vector3f cameraDir = new Vector3f(0,-2,-1);
 
     public static InputHandler inputHandler;
+
+    private static List<CollisionBox> worldObjectsCollisionBoxes;
 
     private static Vector3f cameraOffset = new Vector3f(0, 5, 1); // X, Y, Z relative to player
 
@@ -55,9 +58,18 @@ public class App {
         String vertexShaderCode = loadShaderSource("res/shaders/default.vert");
         String fragmentShaderCode = loadShaderSource("res/shaders/default.frag");
         Shader shader = new Shader(vertexShaderCode, fragmentShaderCode);
-        Object tree = new Object("res/models/configs/tree.json", shader, new Vector3f(2,0,-2f), new Vector3f(0,0,0));
+        // shader used for drawing simple colored lines (wireframes)
+        String lineVert = loadShaderSource("res/shaders/line.vert");
+        String lineFrag = loadShaderSource("res/shaders/line.frag");
+        Shader lineShader = new Shader(lineVert, lineFrag);
         
+        Object tree = new Object("res/models/configs/tree.json", shader, new Vector3f(2,0,-2f), new Vector3f(0,0,0));
         Player player = new Player(new Vector3f(0,0,-0.5f), shader);
+
+        // Only include static/world objects here — don't include the player's own box
+        worldObjectsCollisionBoxes = List.of(
+            tree.getCollisionBox()
+        );
 
         long lastTime = System.nanoTime();
 
@@ -67,10 +79,12 @@ public class App {
         shader.setVec3("objectColor", new Vector3f(1, 1, 1));
         shader.unbind();
 
+        // NOTE: debug collision rendering will happen each frame in the main loop below
+
         while (!glfwWindowShouldClose(window)) {
 
             long now = System.nanoTime();
-            float deltaTime = (now - lastTime) / 1_000_000_000.0f; // seconds
+            float deltaTime = (now - lastTime) / 1_000_000_000.0f;
             lastTime = now;
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -98,6 +112,13 @@ public class App {
             // === RENDER ===
             player.render(viewMatrix, projectionMatrix);
             tree.render(viewMatrix, projectionMatrix);
+
+            // DEBUG: render collision boxes (wireframes) each frame so they remain visible
+            for (CollisionBox cb : worldObjectsCollisionBoxes) {
+                cb.render(lineShader, viewMatrix, projectionMatrix);
+            }
+            // render the player's collision box too (player not included in worldObjectsCollisionBoxes)
+            player.getCollisionBox().render(lineShader, viewMatrix, projectionMatrix);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
@@ -127,10 +148,14 @@ public class App {
     public static Matrix4f getProjectionMatrix() {
         return new Matrix4f().perspective(
             (float)Math.toRadians(60.0f),
-            (float)width / height,
+            (float)width / (float)height,
             0.1f,
             100.0f
         );
+    }
+
+    public static List<CollisionBox> getWorldObjectsCollisionBoxes() {
+        return worldObjectsCollisionBoxes;
     }
 
 }

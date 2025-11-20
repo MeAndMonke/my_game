@@ -10,7 +10,11 @@ public class InputHandler {
     private final Map<Integer, Boolean> keyDown = new HashMap<>();
     private final Map<Integer, Boolean> mouseDown = new HashMap<>();
 
+    private long window;
+
     public InputHandler(long window) {
+
+        this.window = window;
 
         glfwSetKeyCallback(window, (win, key, scancode, action, mods) -> {
             if (action == GLFW_PRESS) {
@@ -35,5 +39,17 @@ public class InputHandler {
 
     public boolean isMouseDown(int button) {
         return mouseDown.getOrDefault(button, false);
+    }
+
+    public double getMouseX() {
+        double[] x = new double[1];
+        glfwGetCursorPos(window, x, null);
+        return x[0];
+    }
+
+    public double getMouseY() {
+        double[] y = new double[1];
+        glfwGetCursorPos(window, null, y);
+        return y[0];
     }
 }

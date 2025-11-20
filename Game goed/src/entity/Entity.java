@@ -1,16 +1,11 @@
 package entity;
 
-import java.io.FileInputStream;
-
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import physics.CollisionBox;
 import renderer.Model;
 import renderer.Shader;
-import renderer.Texture;
 
 public class Entity {
     private Model model;
@@ -19,7 +14,7 @@ public class Entity {
     private Vector3f rotation;
     private float scale;
     
-    private CollisionBox collisionBox;
+    public CollisionBox collisionBox;
 
 
     public Entity(Vector3f position, Shader shader, String configPath) {
@@ -65,32 +60,7 @@ public class Entity {
     }
 
     private void loadConfigData(String configPath, Shader shader) {
-        String collisionPath = null;
-        try (FileInputStream fis = new FileInputStream(configPath)) {
-            JSONObject json = new JSONObject(new JSONTokener(fis));
-
-            String modelPath = json.getString("modelPath");
-            String texturePath = json.getString("texturePath");
-            collisionPath = json.getString("collisionPath");
-
-            this.scale = json.getFloat("scale");
-
-            this.model = new Model(modelPath, shader, position, rotation, scale, new Texture(texturePath));
-        } 
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try (FileInputStream fis = new FileInputStream(collisionPath)) {
-            JSONObject json = new JSONObject(new JSONTokener(fis));
-            float width = json.getFloat("width");
-            float height = json.getFloat("height");
-            float offsetX = json.getFloat("offsetX");
-            float offsetY = json.getFloat("offsetY");
-
-            this.collisionBox = new CollisionBox(position, width, height, offsetX, offsetY);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.model = ConfigLoader.loadModel(configPath, shader, position, rotation);
+        this.collisionBox = ConfigLoader.loadCollisionBox(ConfigLoader.getCollisionPath(configPath), position);
     }
 }
