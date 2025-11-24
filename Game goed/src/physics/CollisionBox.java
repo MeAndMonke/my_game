@@ -119,8 +119,10 @@ public class CollisionBox {
         shader.setMat4("model", model);
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
-        // color is provided by the shader used to draw the box (e.g. a simple line shader)
+        // set a visible color for the line shader (default red)
+        shader.setVec3("color", 1f, 0f, 0f);
 
+        glLineWidth(2.0f);
         glBindVertexArray(vao);
         glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);

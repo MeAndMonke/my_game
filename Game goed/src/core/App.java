@@ -17,6 +17,15 @@ import java.nio.file.Paths;
 
 import org.joml.Matrix4f;
 import java.util.List;
+
+import ui.UIManager;
+import ui.UIButton;
+
+import gameplay.HotBar;
+
+import static org.lwjgl.opengl.GL20.glUseProgram;
+
+
 import physics.CollisionBox;
 
 public class App {
@@ -29,8 +38,7 @@ public class App {
 
     private static List<CollisionBox> worldObjectsCollisionBoxes;
 
-    private static Vector3f cameraOffset = new Vector3f(0, 5, 1); // X, Y, Z relative to player
-
+    private static Vector3f cameraOffset = new Vector3f(0, 5, 1);
 
     private static void initWindow() {
         if (!glfwInit()) throw new IllegalStateException("Unable to initialize GLFW");
@@ -45,7 +53,7 @@ public class App {
         GL.createCapabilities();
 
         glEnable(GL_DEPTH_TEST);
-        glClearColor(0.2f, 0.4f, 0.2f, 1f);
+        glClearColor(0f, 0f, 0f, 1f);
     }
 
     public static void main(String[] args) {
@@ -54,11 +62,11 @@ public class App {
     }
 
     public static void run() {
-        // Load shader and model once
+        
         String vertexShaderCode = loadShaderSource("res/shaders/default.vert");
         String fragmentShaderCode = loadShaderSource("res/shaders/default.frag");
         Shader shader = new Shader(vertexShaderCode, fragmentShaderCode);
-        // shader used for drawing simple colored lines (wireframes)
+        
         String lineVert = loadShaderSource("res/shaders/line.vert");
         String lineFrag = loadShaderSource("res/shaders/line.frag");
         Shader lineShader = new Shader(lineVert, lineFrag);
@@ -66,20 +74,25 @@ public class App {
         Object tree = new Object("res/models/configs/tree.json", shader, new Vector3f(2,0,-2f), new Vector3f(0,0,0));
         Player player = new Player(new Vector3f(0,0,-0.5f), shader);
 
-        // Only include static/world objects here — don't include the player's own box
+        
         worldObjectsCollisionBoxes = List.of(
             tree.getCollisionBox()
         );
 
         long lastTime = System.nanoTime();
 
+        UIManager uiManager = new UIManager();
+        uiManager.add(new UIButton(50, 50, 175, 50, "Test Button"));
+
+        HotBar hotBar = new HotBar(uiManager);
+        hotBar.loadHotbar();
+
+
         shader.bind();
         shader.setVec3("lightPos", new Vector3f(10, 10, 10));
         shader.setVec3("lightColor", new Vector3f(1, 1, 1));
         shader.setVec3("objectColor", new Vector3f(1, 1, 1));
         shader.unbind();
-
-        // NOTE: debug collision rendering will happen each frame in the main loop below
 
         while (!glfwWindowShouldClose(window)) {
 
@@ -89,18 +102,15 @@ public class App {
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            // === UPDATE ===
+            // 3D rendering
             player.update(deltaTime);
-
             cameraPos.set(player.getPosition()).add(cameraOffset);
 
-            // === CAMERA MATRICES ===
             Matrix4f viewMatrix = new Matrix4f().lookAt(
                 cameraPos,
                 new Vector3f(cameraPos).add(cameraDir),
                 new Vector3f(0,1,0)
             );
-
 
             Matrix4f projectionMatrix = new Matrix4f().perspective(
                 (float)Math.toRadians(60.0f),
@@ -109,19 +119,46 @@ public class App {
                 100.0f
             );
 
-            // === RENDER ===
             player.render(viewMatrix, projectionMatrix);
             tree.render(viewMatrix, projectionMatrix);
 
-            // DEBUG: render collision boxes (wireframes) each frame so they remain visible
+            glDisable(GL_DEPTH_TEST);
             for (CollisionBox cb : worldObjectsCollisionBoxes) {
                 cb.render(lineShader, viewMatrix, projectionMatrix);
             }
-            // render the player's collision box too (player not included in worldObjectsCollisionBoxes)
+
             player.getCollisionBox().render(lineShader, viewMatrix, projectionMatrix);
+            glEnable(GL_DEPTH_TEST);
+
+            // 2D UI rendering
+            glUseProgram(0);
+            glDisable(GL_DEPTH_TEST);
+
+            glMatrixMode(GL_PROJECTION);
+            glPushMatrix();
+            glLoadIdentity();
+            glOrtho(0, width, height, 0, -1, 1);
+
+            glMatrixMode(GL_MODELVIEW);
+            glPushMatrix();
+            glLoadIdentity();
+
+            // update and render UI
+            uiManager.update(deltaTime);
+            uiManager.render();
+
+            // restore 3D matrices
+            glMatrixMode(GL_MODELVIEW);
+            glPopMatrix();
+
+            glMatrixMode(GL_PROJECTION);
+            glPopMatrix();
+
+            glEnable(GL_DEPTH_TEST);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
+
         }
     }
 
@@ -152,6 +189,14 @@ public class App {
             0.1f,
             100.0f
         );
+    }
+
+    public static int getWindowHeight() {
+        return height;
+    }
+
+    public static int getWindowWidth() {
+        return width;
     }
 
     public static List<CollisionBox> getWorldObjectsCollisionBoxes() {

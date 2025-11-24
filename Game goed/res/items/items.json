@@ -1,0 +1,56 @@
+[
+    {
+        "id": "log",
+        "name": "Log",
+        "description": "A piece of wood obtained from chopping down trees.",
+        "texture": "res/textures/items/log.png",
+        "weight": 2.5,
+        "value": 1.5,
+        "rarity": "common",
+        "recipe": null
+    },
+    {
+        "id": "stick",
+        "name": "Stick",
+        "description": "A common building material used in construction and crafting.",
+        "texture": "res/textures/items/stick.png",
+        "weight": 0.5,
+        "value": 0.5,
+        "rarity": "common",
+        "recipe": null
+    },
+    {
+        "id": "basic.axe",
+        "name": "Basic Axe",
+        "description": "A simple axe used for chopping wood.",
+        "rarity": "common",
+
+        "weight": 1.5,
+        "value": 2.0,
+
+        "max_durability": 25,
+        "durability": 25,
+
+        "recipe": {
+            "stick": 2,
+            "stone": 1
+        }
+    },
+    {
+        "id": "basic.pickaxe",
+        "name": "Basic Pickaxe",
+        "description": "A simple pickaxe used for mining stone.",
+        "rarity": "common",
+
+        "weight": 1.5,
+        "value": 2.5,
+
+        "max_durability": 25,
+        "durability": 25,
+
+        "recipe": {
+            "stick": 2,
+            "stone": 2
+        }
+    }
+]

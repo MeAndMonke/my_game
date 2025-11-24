@@ -20,17 +20,19 @@ public class UIButton extends UIElement {
 
     @Override
     public void update(float dt) {
-        // check if mouse is inside
         double mx = inputHandler.getMouseX();
         double my = inputHandler.getMouseY();
         hovered = mx >= x && mx <= x + width &&
-                  my >= y && my <= y + height;
+                my >= y && my <= y + height;
     }
 
     @Override
     public void render() {
-        if (hovered) drawRect(x, y, width, height, Color.GRAY);
-        else         drawRect(x, y, width, height, Color.DARK_GRAY);
+        if (hovered) {
+            drawRect(x, y, width, height, Color.GRAY);
+        } else {       
+            drawRect(x, y, width, height, Color.DARK_GRAY);
+        }
 
         drawText(text, x + 10, y + 10);
     }
@@ -38,7 +40,7 @@ public class UIButton extends UIElement {
     @Override
     public void onClick(double mx, double my) {
         if (hovered) {
-            System.out.println("Button clicked!");
+            System.out.println("button clicked");
         }
     }
 }
