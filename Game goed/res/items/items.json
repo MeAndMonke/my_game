@@ -23,6 +23,7 @@
         "id": "basic.axe",
         "name": "Basic Axe",
         "description": "A simple axe used for chopping wood.",
+        "texture": "res/textures/items/tools/basic_axe.png",
         "rarity": "common",
 
         "weight": 1.5,
@@ -40,6 +41,7 @@
         "id": "basic.pickaxe",
         "name": "Basic Pickaxe",
         "description": "A simple pickaxe used for mining stone.",
+        "texture": "res/textures/items/tools/basic_pickaxe.png",
         "rarity": "common",
 
         "weight": 1.5,

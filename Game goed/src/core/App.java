@@ -18,15 +18,11 @@ import java.nio.file.Paths;
 import org.joml.Matrix4f;
 import java.util.List;
 
-import ui.UIManager;
-import ui.UIButton;
-
-import gameplay.HotBar;
-
 import static org.lwjgl.opengl.GL20.glUseProgram;
 
 
 import physics.CollisionBox;
+import physics.CollisionHandler;
 
 public class App {
     private static long window;
@@ -35,9 +31,7 @@ public class App {
     private static Vector3f cameraDir = new Vector3f(0,-2,-1);
 
     public static InputHandler inputHandler;
-
     private static List<CollisionBox> worldObjectsCollisionBoxes;
-
     private static Vector3f cameraOffset = new Vector3f(0, 5, 1);
 
     private static void initWindow() {
@@ -53,7 +47,7 @@ public class App {
         GL.createCapabilities();
 
         glEnable(GL_DEPTH_TEST);
-        glClearColor(0f, 0f, 0f, 1f);
+        glClearColor(0f, 0.3f, 0f, 1f);
     }
 
     public static void main(String[] args) {
@@ -81,15 +75,8 @@ public class App {
 
         long lastTime = System.nanoTime();
 
-        UIManager uiManager = new UIManager();
-        uiManager.add(new UIButton(50, 50, 175, 50, "Test Button"));
-
-        HotBar hotBar = new HotBar(uiManager);
-        hotBar.loadHotbar();
-
-
         shader.bind();
-        shader.setVec3("lightPos", new Vector3f(10, 10, 10));
+        shader.setVec3("lightPos", new Vector3f(10, 50, 10));
         shader.setVec3("lightColor", new Vector3f(1, 1, 1));
         shader.setVec3("objectColor", new Vector3f(1, 1, 1));
         shader.unbind();
@@ -122,12 +109,23 @@ public class App {
             player.render(viewMatrix, projectionMatrix);
             tree.render(viewMatrix, projectionMatrix);
 
+            boolean collision = CollisionHandler.checkCollision(
+                player.getCollisionBox(),
+                List.of(tree.getInteractionBox())
+            );
+
+            if (collision) {
+                tree.getCollisionBox().setColor(new Vector3f(0f,1f,0f));
+            } else {
+                tree.getCollisionBox().setColor(new Vector3f(1f,0f,0f));
+            }
+
             glDisable(GL_DEPTH_TEST);
             for (CollisionBox cb : worldObjectsCollisionBoxes) {
                 cb.render(lineShader, viewMatrix, projectionMatrix);
+                
             }
 
-            player.getCollisionBox().render(lineShader, viewMatrix, projectionMatrix);
             glEnable(GL_DEPTH_TEST);
 
             // 2D UI rendering
@@ -143,11 +141,9 @@ public class App {
             glPushMatrix();
             glLoadIdentity();
 
-            // update and render UI
-            uiManager.update(deltaTime);
-            uiManager.render();
+            player.renderUI();
 
-            // restore 3D matrices
+            // restore 3D
             glMatrixMode(GL_MODELVIEW);
             glPopMatrix();
 

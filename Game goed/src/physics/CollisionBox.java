@@ -21,6 +21,8 @@ public class CollisionBox {
     private int ebo = 0;
     private boolean initialized = false;
 
+    private Vector3f color = new Vector3f(1f,0,0);
+
     public CollisionBox(Vector3f position, float width, float height, float offsetX, float offsetY) {
         this.position = new Vector3f(position);
         this.width = width;
@@ -120,7 +122,7 @@ public class CollisionBox {
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
         // set a visible color for the line shader (default red)
-        shader.setVec3("color", 1f, 0f, 0f);
+        shader.setVec3("color", color);
 
         glLineWidth(2.0f);
         glBindVertexArray(vao);
@@ -128,5 +130,9 @@ public class CollisionBox {
         glBindVertexArray(0);
 
         shader.unbind();
+    }
+
+    public void setColor(Vector3f color) {
+        this.color = color;
     }
 }

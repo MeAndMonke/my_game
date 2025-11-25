@@ -2,5 +2,22 @@
     "modelPath": "res/models/objects/tree.obj",
     "collisionPath": "res/models/collision/tree.json",
     "texturePath": "res/textures/tree_texture.jpg",
-    "scale": 1.2
+    "scale": 1.2,
+    "interactable": true,
+    "interactableType": "breakable",
+    "toolsRequired": [
+        "basic.axe"
+    ],
+    "drops": {
+        "log": {
+            "min": 1,
+            "max": 3,
+            "chance": 0.9
+        },
+        "stick": {
+            "min": 2,
+            "max": 5,
+            "chance": 0.75
+        }
+    }
 }

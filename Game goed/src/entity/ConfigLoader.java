@@ -9,6 +9,9 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import physics.CollisionBox;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class ConfigLoader {
 
@@ -51,5 +54,83 @@ public class ConfigLoader {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static boolean getInteractable(String configPath) {
+        try {
+            FileInputStream fis = new FileInputStream(configPath);
+            JSONObject json = new JSONObject(new JSONTokener(fis));
+            return json.getBoolean("interactable");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static String getInteractableType(String configPath) {
+        try {
+            FileInputStream fis = new FileInputStream(configPath);
+            JSONObject json = new JSONObject(new JSONTokener(fis));
+            return json.getString("interactableType");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String[] getToolsRequired(String configPath) {
+        try {
+            FileInputStream fis = new FileInputStream(configPath);
+            JSONObject json = new JSONObject(new JSONTokener(fis));
+            var jsonArray = json.getJSONArray("toolsRequired");
+            String[] tools = new String[jsonArray.length()];
+            for (int i = 0; i < jsonArray.length(); i++) {
+                tools[i] = jsonArray.getString(i);
+            }
+            return tools;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new String[0];
+        }
+    }
+
+    public static CollisionBox loadInteractionBox(String collisionPath, Vector3f position) {
+        try (FileInputStream fis = new FileInputStream(collisionPath)) {
+            JSONObject json = new JSONObject(new JSONTokener(fis));
+
+            float interactionWidth = json.getFloat("interactionWidth");
+            float width = json.getFloat("width");
+            float height = json.getFloat("height");
+            float offsetX = json.getFloat("offsetX");
+            float offsetY = json.getFloat("offsetY");
+
+            return new CollisionBox(position, width + interactionWidth, height + interactionWidth, offsetX, offsetY);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static List<Drop> getDrops(String configPath) {
+        List<Drop> drops = new ArrayList<>();
+        
+        try (FileInputStream fis = new FileInputStream(configPath)) {
+            JSONObject json = new JSONObject(new JSONTokener(fis));
+            JSONObject dropsObj = json.getJSONObject("drops");
+
+            for (String key : dropsObj.keySet()) {
+                JSONObject dropData = dropsObj.getJSONObject(key);
+
+                int min = dropData.getInt("min");
+                int max = dropData.getInt("max");
+                double chance = dropData.getDouble("chance");
+
+                drops.add(new Drop(key, min, max, chance));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return drops;
     }
 }

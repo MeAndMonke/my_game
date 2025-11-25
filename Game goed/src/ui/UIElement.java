@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 
+
 public abstract class UIElement {
     public float x, y, width, height;
 
@@ -16,16 +17,16 @@ public abstract class UIElement {
     public abstract void render();
     public abstract void onClick(double mx, double my);
 
-    public void drawRect(float x, float y, float w, float h, Color color) {
-        glColor3f(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f);
-
+    public void drawRect(float x, float y, float w, float h, int r, int g, int b, int a) {
+        glColor4f(r / 255f, g / 255f, b / 255f, a / 255f);
         glBegin(GL_QUADS);
-            glVertex2f(x,     y);
+            glVertex2f(x, y);
             glVertex2f(x + w, y);
             glVertex2f(x + w, y + h);
-            glVertex2f(x,     y + h);
+            glVertex2f(x, y + h);
         glEnd();
     }
+
 
     public void drawText(String text, float x, float y) {
         Font font = new Font(Font.MONOSPACED, Font.BOLD, 20);
@@ -76,6 +77,49 @@ public abstract class UIElement {
             glTexCoord2f(1f, 0f); glVertex2f(x + textWidth, y);
             glTexCoord2f(1f, 1f); glVertex2f(x + textWidth, y + textHeight);
             glTexCoord2f(0f, 1f); glVertex2f(x, y + textHeight);
+        glEnd();
+
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDeleteTextures(texId);
+    }
+
+    public void drawImage(BufferedImage image, float x, float y, float w, float h) {
+        int imgWidth = image.getWidth();
+        int imgHeight = image.getHeight();
+
+        int[] pixels = new int[imgWidth * imgHeight];
+        image.getRGB(0, 0, imgWidth, imgHeight, pixels, 0, imgWidth);
+        ByteBuffer buffer = org.lwjgl.BufferUtils.createByteBuffer(imgWidth * imgHeight * 4);
+        for (int i = 0; i < pixels.length; i++) {
+            int p = pixels[i];
+            buffer.put((byte) ((p >> 16) & 0xFF)); // R
+            buffer.put((byte) ((p >> 8) & 0xFF));  // G
+            buffer.put((byte) (p & 0xFF));         // B
+            buffer.put((byte) ((p >> 24) & 0xFF)); // A
+        }
+        buffer.flip();
+
+        // Upload texture
+        int texId = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, texId);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, imgWidth, imgHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+
+        // Draw textured quad
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glColor3f(1f, 1f, 1f);
+
+        glBegin(GL_QUADS);
+            glTexCoord2f(0f, 0f); glVertex2f(x, y);
+            glTexCoord2f(1f, 0f); glVertex2f(x + w, y);
+            glTexCoord2f(1f, 1f); glVertex2f(x + w, y + h);
+            glTexCoord2f(0f, 1f); glVertex2f(x, y + h);
         glEnd();
 
         glDisable(GL_TEXTURE_2D);
