@@ -3,8 +3,6 @@ package ui;
 import core.App;
 import core.InputHandler;
 
-import java.awt.Color;
-
 public class UIButton extends UIElement {
     private String text;
     private boolean hovered;
@@ -34,7 +32,7 @@ public class UIButton extends UIElement {
             drawRect(x, y, width, height, 64, 64, 64, 255);
         }
 
-        drawText(text, x + 10, y + 10);
+        drawText(text, x + 10, y + 10, 20);
     }
 
     @Override

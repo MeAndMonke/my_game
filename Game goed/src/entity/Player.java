@@ -23,7 +23,7 @@ public class Player extends Entity {
     private InputHandler inputHandler;
     private UIManager uiManager = new UIManager();
     private HotBar hotBar;
-    private Inventory inventory = new Inventory();
+    private Inventory inventory;
 
     public Player(Vector3f position, Shader shader) {
         super(position, shader, "res/models/configs/player.json");
@@ -31,6 +31,7 @@ public class Player extends Entity {
         this.hotBar = new HotBar(uiManager);
         hotBar.loadHotbar();
 
+        this.inventory = new Inventory(this);
         uiManager.addInventory(inventory);
 
         Stack stick = new Stack("stick", 12);
@@ -58,7 +59,6 @@ public class Player extends Entity {
         if (inputHandler.isKeyPressed(GLFW_KEY_E)) inventory.toggleInventory();
 
         // hotbar input
-        // check if number keys 1-5 are pressed to equip corresponding slot
         for (int i = 0; i < hotBar.itemSlots.size(); i++) {
             if (inputHandler.isKeyDown(KeyEvent.VK_1 + i)) {
                 hotBar.equipSlot(i);
@@ -81,7 +81,10 @@ public class Player extends Entity {
 
             setRotation(getRotation(direction));
         }
+    }
 
+    public HotBar getHotBar() {
+        return hotBar;
     }
 
     public void renderUI() {

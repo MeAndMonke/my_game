@@ -6,13 +6,15 @@ import ui.UIInventory;
 import java.util.List;
 import java.util.ArrayList;
 
+import entity.Player;
+
 public class Inventory {
     private List<Stack> items = new ArrayList<>();
-    private UIInventory uiInventory = new UIInventory(10);
-
+    private UIInventory uiInventory;
     private boolean isOpen = false;
 
-    public Inventory() {
+    public Inventory(Player player) {
+        uiInventory = new UIInventory(10, player);
     }
 
     public void addItem(Stack stack) {

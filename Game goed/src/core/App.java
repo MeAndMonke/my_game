@@ -34,6 +34,7 @@ public class App {
     public static InputHandler inputHandler;
     private static List<CollisionBox> worldObjectsCollisionBoxes;
     private static Vector3f cameraOffset = new Vector3f(0, 5, 1);
+    private static Player player;
     
     public static ItemManager itemManager = new ItemManager("res/items/items.json");
 
@@ -69,7 +70,7 @@ public class App {
         Shader lineShader = new Shader(lineVert, lineFrag);
         
         Object tree = new Object("res/models/configs/tree.json", shader, new Vector3f(2,0,-2f), new Vector3f(0,0,0));
-        Player player = new Player(new Vector3f(0,0,-0.5f), shader);
+        player = new Player(new Vector3f(0,0,-0.5f), shader);
 
         
         worldObjectsCollisionBoxes = List.of(
@@ -196,6 +197,10 @@ public class App {
 
     public static int getWindowWidth() {
         return width;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     public static List<CollisionBox> getWorldObjectsCollisionBoxes() {

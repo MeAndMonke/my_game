@@ -32,6 +32,10 @@ public class Stack {
         return itemId;
     }
 
+    public int getAmount() {
+        return quantity;
+    }
+
     public Item getItem() {
         return itemManager.getItemById(itemId);
     }

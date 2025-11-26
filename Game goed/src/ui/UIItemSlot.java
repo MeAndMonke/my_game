@@ -1,8 +1,14 @@
 package ui;
 
+import org.w3c.dom.css.RGBColor;
+
+import items.Item;
 import items.Stack;
 
+import static org.lwjgl.opengl.GL11.glColor4f;
+
 public class UIItemSlot extends UIElement {
+    private Item item;
     private Stack stack;
     private boolean equipped;
     
@@ -13,11 +19,11 @@ public class UIItemSlot extends UIElement {
         this.height = size;
     }
 
-    public void setItem(Stack stack) {
+    public void setStack(Stack stack) {
         this.stack = stack;
     }
 
-    public Stack getItem() {
+    public Stack getStack() {
         return stack;
     }
 
@@ -41,8 +47,11 @@ public class UIItemSlot extends UIElement {
         }
         drawRect(x, y, width, height, 100, 100, 100, 200);
 
+        // `setItem` stores a Stack in the `stack` field; `item` is unused.
+        // Check `stack` (and that it contains a valid Item/image) before drawing.
         if (stack != null && stack.getItem() != null && stack.getItem().getImage() != null) {
             drawImage(stack.getItem().getImage(), x + 10, y + 10, width - 20, height - 20);
+            drawText(stack.getAmount() + "", x + width - 20, y + height - 20, 15);
         }
     }
 

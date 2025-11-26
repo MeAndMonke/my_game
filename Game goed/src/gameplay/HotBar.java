@@ -38,7 +38,7 @@ public class HotBar {
 
     public void setItemInSlot(int slotIndex, Stack stack) {
         if (slotIndex >= 0 && slotIndex < itemSlots.size()) {
-            itemSlots.get(slotIndex).setItem(stack);
+            itemSlots.get(slotIndex).setStack(stack);
         }
     }
 

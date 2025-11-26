@@ -1,6 +1,5 @@
 package ui;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -32,8 +31,8 @@ public abstract class UIElement {
     }
 
 
-    public void drawText(String text, float x, float y) {
-        Font font = new Font(Font.MONOSPACED, Font.BOLD, 20);
+    public void drawText(String text, float x, float y, int fontSize) {
+        Font font = new Font(Font.MONOSPACED, Font.BOLD, fontSize);
 
         BufferedImage tmp = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2dTmp = tmp.createGraphics();
