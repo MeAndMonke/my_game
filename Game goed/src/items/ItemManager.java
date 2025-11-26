@@ -28,6 +28,7 @@ public class ItemManager {
                 Item item = new Item(
                     obj.getString("id"),
                     obj.getString("name"),
+                    obj.getInt("maxStackSize"),
                     obj.getString("description"),
                     obj.getString("texture"),
                     obj.getDouble("weight"),

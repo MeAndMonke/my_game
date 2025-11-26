@@ -14,11 +14,12 @@ public class Item {
     private JSONArray recipe;
 
     private BufferedImage imageCache = null;
+    private int maxStackSize;
 
-    public Item(String id, String name, String description, String texture, double weight,
-                double value, String rarity, JSONArray recipe) {
+    public Item(String id, String name, Integer maxStackSize, String description, String texture, double weight, double value, String rarity, JSONArray recipe) {
         this.id = id;
         this.name = name;
+        this.maxStackSize = maxStackSize;
         this.description = description;
         this.texture = texture;
         this.weight = weight;
@@ -44,4 +45,5 @@ public class Item {
     public String getRarity() { return rarity; }
     public JSONArray getRecipe() { return recipe; }
     public BufferedImage getImage() { return imageCache; }
+    public int getMaxStackSize() { return maxStackSize; }
 }

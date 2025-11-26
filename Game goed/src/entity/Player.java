@@ -4,14 +4,16 @@ import org.joml.Vector3f;
 
 import core.InputHandler;
 import gameplay.HotBar;
+import gameplay.Inventory;
 import physics.CollisionHandler;
 import renderer.Shader;
 
 import static org.lwjgl.glfw.GLFW.*;
-import org.joml.Matrix4f;
 
 import ui.UIManager;
 import java.awt.event.KeyEvent;
+
+import items.Stack;
 
 
 import core.App;
@@ -21,12 +23,18 @@ public class Player extends Entity {
     private InputHandler inputHandler;
     private UIManager uiManager = new UIManager();
     private HotBar hotBar;
+    private Inventory inventory = new Inventory();
 
     public Player(Vector3f position, Shader shader) {
         super(position, shader, "res/models/configs/player.json");
         this.inputHandler = App.getInputHandler();
         this.hotBar = new HotBar(uiManager);
         hotBar.loadHotbar();
+
+        uiManager.addInventory(inventory);
+
+        Stack stick = new Stack("stick", 12);
+        hotBar.setItemInSlot(0, stick);
     }
 
     public Vector3f getRotation(Vector3f direction) {
@@ -46,6 +54,8 @@ public class Player extends Entity {
         if (inputHandler.isKeyDown(GLFW_KEY_S)) direction.z += 1;
         if (inputHandler.isKeyDown(GLFW_KEY_A)) direction.x -= 1;
         if (inputHandler.isKeyDown(GLFW_KEY_D)) direction.x += 1;
+
+        if (inputHandler.isKeyPressed(GLFW_KEY_E)) inventory.toggleInventory();
 
         // hotbar input
         // check if number keys 1-5 are pressed to equip corresponding slot
@@ -76,6 +86,6 @@ public class Player extends Entity {
 
     public void renderUI() {
         uiManager.render();
+        inventory.render();
     }
-
 }

@@ -2,11 +2,11 @@ package gameplay;
 
 import ui.UIManager;
 import core.App;
-import core.InputHandler;
 import ui.UIItemSlot;
 
+import items.Stack;
+
 import java.util.List;
-import java.awt.event.KeyEvent;
 
 public class HotBar {
 
@@ -18,7 +18,6 @@ public class HotBar {
     private int itemSlotSize = 50;
     private int padding = 5;
 
-    private InputHandler inputHandler = App.getInputHandler();
 
     public HotBar(UIManager uiManager) {
         this.uiManager = uiManager;
@@ -37,9 +36,9 @@ public class HotBar {
         equipSlot(0);
     }
 
-    public void setItemInSlot(int slotIndex, items.Item item) {
+    public void setItemInSlot(int slotIndex, Stack stack) {
         if (slotIndex >= 0 && slotIndex < itemSlots.size()) {
-            itemSlots.get(slotIndex).setItem(item);
+            itemSlots.get(slotIndex).setItem(stack);
         }
     }
 

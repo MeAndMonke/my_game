@@ -3,6 +3,7 @@
         "id": "log",
         "name": "Log",
         "description": "A piece of wood obtained from chopping down trees.",
+        "maxStackSize": 5,
         "texture": "res/textures/items/log.png",
         "weight": 2.5,
         "value": 1.5,
@@ -13,6 +14,7 @@
         "id": "stick",
         "name": "Stick",
         "description": "A common building material used in construction and crafting.",
+        "maxStackSize": 10,
         "texture": "res/textures/items/stick.png",
         "weight": 0.5,
         "value": 0.5,
@@ -23,6 +25,7 @@
         "id": "basic.axe",
         "name": "Basic Axe",
         "description": "A simple axe used for chopping wood.",
+        "maxStackSize": 1,
         "texture": "res/textures/items/tools/basic_axe.png",
         "rarity": "common",
 
@@ -41,6 +44,7 @@
         "id": "basic.pickaxe",
         "name": "Basic Pickaxe",
         "description": "A simple pickaxe used for mining stone.",
+        "maxStackSize": 1,
         "texture": "res/textures/items/tools/basic_pickaxe.png",
         "rarity": "common",
 

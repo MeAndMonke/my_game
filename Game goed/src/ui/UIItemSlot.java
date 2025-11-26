@@ -1,13 +1,9 @@
 package ui;
 
-import org.w3c.dom.css.RGBColor;
-
-import items.Item;
-
-import static org.lwjgl.opengl.GL11.glColor4f;
+import items.Stack;
 
 public class UIItemSlot extends UIElement {
-    private Item item;
+    private Stack stack;
     private boolean equipped;
     
     public UIItemSlot(float x, float y, float size) {
@@ -17,12 +13,12 @@ public class UIItemSlot extends UIElement {
         this.height = size;
     }
 
-    public void setItem(Item item) {
-        this.item = item;
+    public void setItem(Stack stack) {
+        this.stack = stack;
     }
 
-    public Item getItem() {
-        return item;
+    public Stack getItem() {
+        return stack;
     }
 
     public boolean isEquipped() {
@@ -45,8 +41,8 @@ public class UIItemSlot extends UIElement {
         }
         drawRect(x, y, width, height, 100, 100, 100, 200);
 
-        if (item != null) {
-            drawImage(item.getImage(), x + 10, y + 10, width - 20, height - 20);
+        if (stack != null && stack.getItem() != null && stack.getItem().getImage() != null) {
+            drawImage(stack.getItem().getImage(), x + 10, y + 10, width - 20, height - 20);
         }
     }
 

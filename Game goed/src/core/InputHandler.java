@@ -52,4 +52,13 @@ public class InputHandler {
         glfwGetCursorPos(window, null, y);
         return y[0];
     }
+
+    public boolean isKeyPressed(int key) {
+        Boolean pressed = keyDown.get(key);
+        if (pressed != null && pressed) {
+            keyDown.put(key, false); // reset the state
+            return true;
+        }
+        return false;
+    }
 }

@@ -1,7 +1,5 @@
 package entity;
 
-import java.lang.reflect.Array;
-
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -20,6 +18,7 @@ public class Object {
     private float scale;
 
     private boolean interactable;
+    
     private String interactableType;
     private String[] toolsRequired;
     private List<Drop> drops;

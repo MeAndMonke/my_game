@@ -18,6 +18,10 @@ public abstract class UIElement {
     public abstract void onClick(double mx, double my);
 
     public void drawRect(float x, float y, float w, float h, int r, int g, int b, int a) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
         glColor4f(r / 255f, g / 255f, b / 255f, a / 255f);
         glBegin(GL_QUADS);
             glVertex2f(x, y);

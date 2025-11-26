@@ -4,6 +4,7 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL;
 
 import entity.Player;
+import items.ItemManager;
 import renderer.*;
 
 import entity.Object;
@@ -33,6 +34,8 @@ public class App {
     public static InputHandler inputHandler;
     private static List<CollisionBox> worldObjectsCollisionBoxes;
     private static Vector3f cameraOffset = new Vector3f(0, 5, 1);
+    
+    public static ItemManager itemManager = new ItemManager("res/items/items.json");
 
     private static void initWindow() {
         if (!glfwInit()) throw new IllegalStateException("Unable to initialize GLFW");
