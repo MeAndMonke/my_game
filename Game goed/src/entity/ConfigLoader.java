@@ -111,6 +111,16 @@ public class ConfigLoader {
         }
     }
 
+    public static float getScale(String configPath) {
+        try (FileInputStream fis = new FileInputStream(configPath)) {
+            JSONObject json = new JSONObject(new JSONTokener(fis));
+            return json.getFloat("scale");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1.0f;
+        }
+    }
+
     public static List<Drop> getDrops(String configPath) {
         List<Drop> drops = new ArrayList<>();
         

@@ -8,6 +8,7 @@ import items.ItemManager;
 import renderer.*;
 
 import entity.Object;
+import map.MapHandler;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -20,6 +21,7 @@ import org.joml.Matrix4f;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL20.glUseProgram;
+import java.util.ArrayList;
 
 
 import physics.CollisionBox;
@@ -32,7 +34,7 @@ public class App {
     private static Vector3f cameraDir = new Vector3f(0,-2,-1);
 
     public static InputHandler inputHandler;
-    private static List<CollisionBox> worldObjectsCollisionBoxes;
+    private static List<Object> worldObjectList = new ArrayList<>();
     private static Vector3f cameraOffset = new Vector3f(0, 5, 1);
     private static Player player;
     
@@ -68,14 +70,11 @@ public class App {
         String lineVert = loadShaderSource("res/shaders/line.vert");
         String lineFrag = loadShaderSource("res/shaders/line.frag");
         Shader lineShader = new Shader(lineVert, lineFrag);
-        
-        Object tree = new Object("res/models/configs/tree.json", shader, new Vector3f(2,0,-2f), new Vector3f(0,0,0));
-        player = new Player(new Vector3f(0,0,-0.5f), shader);
 
+        MapHandler mapHandler = new MapHandler(10, 10, shader);
+        System.out.println("Interactable boxes registered: " + worldObjectList.size());
         
-        worldObjectsCollisionBoxes = List.of(
-            tree.getCollisionBox()
-        );
+        player = new Player(new Vector3f(0,0,5), shader);
 
         long lastTime = System.nanoTime();
 
@@ -111,24 +110,41 @@ public class App {
             );
 
             player.render(viewMatrix, projectionMatrix);
-            tree.render(viewMatrix, projectionMatrix);
+            mapHandler.render(viewMatrix, projectionMatrix);
 
-            boolean collision = CollisionHandler.checkCollision(
-                player.getCollisionBox(),
-                List.of(tree.getInteractionBox())
-            );
+            for (Object obj : worldObjectList) {
+                if (obj == null) continue;
+                CollisionBox interactionBox = obj.getInteractionBox();
+                boolean collision = CollisionHandler.checkCollision(
+                    player.getCollisionBox(),
+                    List.of(interactionBox)
+                );
 
-            if (collision) {
-                tree.getCollisionBox().setColor(new Vector3f(0f,1f,0f));
-            } else {
-                tree.getCollisionBox().setColor(new Vector3f(1f,0f,0f));
+                 if (collision) {
+                    interactionBox.setColor(new Vector3f(0f,1f,0f));
+                    obj.setInRange(true);
+                } else {
+                    interactionBox.setColor(new Vector3f(1f,0f,0f));
+                    obj.setInRange(false);
+                }
+
             }
 
             glDisable(GL_DEPTH_TEST);
-            for (CollisionBox cb : worldObjectsCollisionBoxes) {
-                cb.render(lineShader, viewMatrix, projectionMatrix);
-                
-            }
+            // render debug lines
+            // for (Object obj : worldObjectList) {
+            //     if (obj == null) continue;
+
+            //     CollisionBox collisionBox = obj.getCollisionBox();
+            //     if (collisionBox != null) {
+            //         collisionBox.render(lineShader, viewMatrix, projectionMatrix);
+            //     }
+
+            //     CollisionBox interactionBox = obj.getInteractionBox();
+            //     if (interactionBox != null) {
+            //         interactionBox.render(lineShader, viewMatrix, projectionMatrix);
+            //     }
+            // }
 
             glEnable(GL_DEPTH_TEST);
 
@@ -203,8 +219,27 @@ public class App {
         return player;
     }
 
+    public static void addWorldObject(Object obj) {
+        if (obj != null) {
+            worldObjectList.add(obj);
+        }
+    }
+
+
+    public static List<Object> getWorldObjects() {
+        return worldObjectList;
+    }
+
     public static List<CollisionBox> getWorldObjectsCollisionBoxes() {
-        return worldObjectsCollisionBoxes;
+        List<CollisionBox> boxes = new ArrayList<>();
+        for (Object obj : worldObjectList) {
+            if (obj == null) continue;
+            CollisionBox cb = obj.getCollisionBox();
+            if (cb != null) {
+                boxes.add(cb);
+            }
+        }
+        return boxes;
     }
 
 }

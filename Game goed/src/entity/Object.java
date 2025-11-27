@@ -18,6 +18,8 @@ public class Object {
     private float scale;
 
     private boolean interactable;
+
+    private boolean inRange = false;
     
     private String interactableType;
     private String[] toolsRequired;
@@ -30,7 +32,6 @@ public class Object {
 
         this.position = pos;
         this.rotation = rot;
-        this.scale = 1;
         loadConfigData(configPath, shader);
     }
 
@@ -46,6 +47,7 @@ public class Object {
 
         this.interactableType = ConfigLoader.getInteractableType(configPath);
         this.toolsRequired = ConfigLoader.getToolsRequired(configPath);
+        this.scale = ConfigLoader.getScale(configPath);
 
         this.drops = ConfigLoader.getDrops(configPath);
     }
@@ -93,6 +95,14 @@ public class Object {
         model.setRotation(rotation);
         model.setScale(scale);
         model.render(view, projection);
+    }
+
+    public boolean inRange() {
+        return inRange;
+    }
+
+    public void setInRange(boolean inRange) {
+        this.inRange = inRange;
     }
 
     public void breakObject() {

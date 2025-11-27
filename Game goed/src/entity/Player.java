@@ -61,6 +61,10 @@ public class Player extends Entity {
         if (inputHandler.isKeyPressed(GLFW_KEY_E)) inventory.toggleInventory();
         inventory.update(deltaTime);
 
+        if (inputHandler.isKeyPressed(GLFW_KEY_SPACE)) {
+            // break thingie infront of player
+        }
+
         // hotbar input
         for (int i = 0; i < hotBar.itemSlots.size(); i++) {
             if (inputHandler.isKeyDown(KeyEvent.VK_1 + i)) {
@@ -74,7 +78,9 @@ public class Player extends Entity {
 
             collisionBox.setPosition(newPos);
 
-            boolean collision = CollisionHandler.checkCollision(collisionBox, App.getWorldObjectsCollisionBoxes());
+            boolean collision = CollisionHandler.checkCollision(collisionBox, 
+                App.getWorldObjectsCollisionBoxes()
+            );
 
             if (!collision) {
                 setPosition(newPos);
