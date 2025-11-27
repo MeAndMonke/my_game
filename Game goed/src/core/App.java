@@ -10,6 +10,7 @@ import renderer.*;
 import entity.Object;
 import map.MapHandler;
 
+
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -35,6 +36,7 @@ public class App {
 
     public static InputHandler inputHandler;
     private static List<Object> worldObjectList = new ArrayList<>();
+    private static MapHandler mapHandler;
     private static Vector3f cameraOffset = new Vector3f(0, 5, 1);
     private static Player player;
     
@@ -71,7 +73,8 @@ public class App {
         String lineFrag = loadShaderSource("res/shaders/line.frag");
         Shader lineShader = new Shader(lineVert, lineFrag);
 
-        MapHandler mapHandler = new MapHandler(10, 10, shader);
+        // keep a reference to the map handler so other systems can remove objects
+        mapHandler = new MapHandler(10, 10, shader);
         System.out.println("Interactable boxes registered: " + worldObjectList.size());
         
         player = new Player(new Vector3f(0,0,5), shader);
@@ -115,36 +118,40 @@ public class App {
             for (Object obj : worldObjectList) {
                 if (obj == null) continue;
                 CollisionBox interactionBox = obj.getInteractionBox();
+                if (interactionBox == null) {
+                    obj.setInRange(false);
+                    continue;
+                }
+
                 boolean collision = CollisionHandler.checkCollision(
                     player.getCollisionBox(),
                     List.of(interactionBox)
                 );
 
-                 if (collision) {
+                if (collision) {
                     interactionBox.setColor(new Vector3f(0f,1f,0f));
                     obj.setInRange(true);
                 } else {
                     interactionBox.setColor(new Vector3f(1f,0f,0f));
                     obj.setInRange(false);
                 }
-
             }
 
             glDisable(GL_DEPTH_TEST);
-            // render debug lines
-            // for (Object obj : worldObjectList) {
-            //     if (obj == null) continue;
+            // render debug lines for world objects
+            for (Object obj : worldObjectList) {
+                if (obj == null) continue;
 
-            //     CollisionBox collisionBox = obj.getCollisionBox();
-            //     if (collisionBox != null) {
-            //         collisionBox.render(lineShader, viewMatrix, projectionMatrix);
-            //     }
+                CollisionBox collisionBox = obj.getCollisionBox();
+                if (collisionBox != null) {
+                    collisionBox.render(lineShader, viewMatrix, projectionMatrix);
+                }
 
-            //     CollisionBox interactionBox = obj.getInteractionBox();
-            //     if (interactionBox != null) {
-            //         interactionBox.render(lineShader, viewMatrix, projectionMatrix);
-            //     }
-            // }
+                CollisionBox interactionBox = obj.getInteractionBox();
+                if (interactionBox != null) {
+                    interactionBox.render(lineShader, viewMatrix, projectionMatrix);
+                }
+            }
 
             glEnable(GL_DEPTH_TEST);
 
@@ -180,6 +187,10 @@ public class App {
 
     public static InputHandler getInputHandler() {
         return inputHandler;
+    }
+
+    public static MapHandler getMapHandler() {
+        return mapHandler;
     }
 
     private static String loadShaderSource(String path) {
@@ -222,6 +233,16 @@ public class App {
     public static void addWorldObject(Object obj) {
         if (obj != null) {
             worldObjectList.add(obj);
+        }
+    }
+
+    public static void removeWorldObject(Object obj) {
+        if (obj == null) return;
+        // remove from list
+        worldObjectList.remove(obj);
+        // if map handler exists, ask it to remove the reference from the map grid
+        if (mapHandler != null) {
+            mapHandler.removeObject(obj);
         }
     }
 

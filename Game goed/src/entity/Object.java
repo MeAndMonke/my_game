@@ -7,6 +7,7 @@ import renderer.Model;
 import renderer.Shader;
 
 import physics.CollisionBox;
+import items.Stack;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class Object {
     
     private String interactableType;
     private String[] toolsRequired;
-    private List<Drop> drops;
+    private List<Stack> drops;
 
     private CollisionBox collisionBox;
     private CollisionBox interactionBox;
@@ -105,8 +106,8 @@ public class Object {
         this.inRange = inRange;
     }
 
-    public void breakObject() {
-        
+    public List<Stack> breakObject() {
+        return drops;
     }
 }
 

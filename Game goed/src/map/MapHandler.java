@@ -74,4 +74,16 @@ public class MapHandler {
             }
         }
     }
+
+    public void removeObject(Object obj) {
+        if (obj == null) return;
+        for (int x = 0; x < mapObjects.length; x++) {
+            for (int z = 0; z < mapObjects[0].length; z++) {
+                if (mapObjects[x][z] == obj) {
+                    mapObjects[x][z] = null;
+                    return;
+                }
+            }
+        }
+    }
 }

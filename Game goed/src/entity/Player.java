@@ -14,7 +14,7 @@ import ui.UIManager;
 import java.awt.event.KeyEvent;
 
 import items.Stack;
-
+import java.util.List;
 
 import core.App;
 
@@ -24,6 +24,8 @@ public class Player extends Entity {
     private UIManager uiManager = new UIManager();
     private HotBar hotBar;
     private Inventory inventory;
+    
+    private List<Object> worldObjects = App.getWorldObjects();
 
     public Player(Vector3f position, Shader shader) {
         super(position, shader, "res/models/configs/player.json");
@@ -61,9 +63,7 @@ public class Player extends Entity {
         if (inputHandler.isKeyPressed(GLFW_KEY_E)) inventory.toggleInventory();
         inventory.update(deltaTime);
 
-        if (inputHandler.isKeyPressed(GLFW_KEY_SPACE)) {
-            // break thingie infront of player
-        }
+        if (inputHandler.isKeyPressed(GLFW_KEY_SPACE)) breakObjectInFront();
 
         // hotbar input
         for (int i = 0; i < hotBar.itemSlots.size(); i++) {
@@ -89,6 +89,27 @@ public class Player extends Entity {
             }
 
             setRotation(getRotation(direction));
+        }
+    }
+
+    public void breakObjectInFront() {
+        Object toRemove = null;
+        for (Object obj : worldObjects) {
+            if (obj == null) continue;
+
+            if (obj.inRange()) {
+                List<Stack> drops = obj.breakObject();
+                for (Stack drop : drops) {
+                    inventory.addItem(drop);
+                }
+                toRemove = obj;
+                break;
+            }
+        }
+
+        if (toRemove != null) {
+            // remove from global world and map
+            core.App.removeWorldObject(toRemove);
         }
     }
 

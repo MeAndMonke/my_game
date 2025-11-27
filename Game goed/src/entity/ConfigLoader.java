@@ -6,11 +6,13 @@ import renderer.Model;
 import renderer.Shader;
 import renderer.Texture;
 import org.json.JSONObject;
+import org.json.JSONArray;
 import org.json.JSONTokener;
 import physics.CollisionBox;
 
 import java.util.ArrayList;
 import java.util.List;
+import items.Stack;
 
 
 public class ConfigLoader {
@@ -121,26 +123,42 @@ public class ConfigLoader {
         }
     }
 
-    public static List<Drop> getDrops(String configPath) {
-        List<Drop> drops = new ArrayList<>();
-        
+    public static List<Stack> getDrops(String configPath) {
+        List<Stack> drops = new ArrayList<>();
         try (FileInputStream fis = new FileInputStream(configPath)) {
             JSONObject json = new JSONObject(new JSONTokener(fis));
-            JSONObject dropsObj = json.getJSONObject("drops");
+            // Support two formats for "drops":
+            // 1) Object mapping: { "itemId": {"min":1,"max":3,"chance":0.9}, ... }
+            // 2) Array list: [ {"itemType":"id","quantity":n}, ... ]
+            java.lang.Object dropsNode = json.opt("drops");
+            if (dropsNode instanceof JSONObject) {
+                JSONObject dropsObj = json.getJSONObject("drops");
+                for (String key : dropsObj.keySet()) {
+                    JSONObject dropData = dropsObj.getJSONObject(key);
+                    int min = dropData.optInt("min", 0);
+                    int max = dropData.optInt("max", min);
+                    double chance = dropData.optDouble("chance", 1.0);
 
-            for (String key : dropsObj.keySet()) {
-                JSONObject dropData = dropsObj.getJSONObject(key);
-
-                int min = dropData.getInt("min");
-                int max = dropData.getInt("max");
-                double chance = dropData.getDouble("chance");
-
-                drops.add(new Drop(key, min, max, chance));
+                    if (Math.random() <= chance) {
+                        int qty = min;
+                        if (max > min) {
+                            qty += (int)(Math.random() * (max - min + 1));
+                        }
+                        drops.add(new Stack(key, qty));
+                    }
+                }
+            } else if (dropsNode instanceof JSONArray) {
+                JSONArray jsonArray = json.getJSONArray("drops");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject dropJson = jsonArray.getJSONObject(i);
+                    String itemType = dropJson.getString("itemType");
+                    int quantity = dropJson.getInt("quantity");
+                    drops.add(new Stack(itemType, quantity));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
         return drops;
     }
 }

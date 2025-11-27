@@ -22,6 +22,17 @@
         "recipe": null
     },
     {
+        "id": "stone",
+        "name": "Stone",
+        "description": "A common building material used in construction and crafting.",
+        "maxStackSize": 10,
+        "texture": "res/textures/items/stone.png",
+        "weight": 0.5,
+        "value": 0.5,
+        "rarity": "common",
+        "recipe": null
+    },
+    {
         "id": "basic.axe",
         "name": "Basic Axe",
         "description": "A simple axe used for chopping wood.",
