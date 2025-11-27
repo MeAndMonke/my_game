@@ -106,8 +106,19 @@ public class Object {
         this.inRange = inRange;
     }
 
+    public String[] getRequiredTools() {
+        if (toolsRequired.length > 0) {
+            return toolsRequired; // assuming single tool requirement for simplicity
+        }
+        return null;
+    }
+
     public List<Stack> breakObject() {
         return drops;
+    }
+
+    public String[] getToolsRequired() {
+        return toolsRequired;
     }
 }
 

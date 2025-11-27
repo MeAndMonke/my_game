@@ -42,6 +42,26 @@ public class HotBar {
         }
     }
 
+    public String getItemInSlot(int slotIndex) {
+        if (slotIndex >= 0 && slotIndex < itemSlots.size()) {
+            Stack stack = itemSlots.get(slotIndex).getStack();
+            if (stack != null) {
+                return stack.getItemId();
+            }
+        }
+        return null;
+    }
+
+    public String getEquippedItemId() {
+        for (int i = 0; i < itemSlots.size(); i++) {
+            UIItemSlot slot = itemSlots.get(i);
+            if (slot.isEquipped() && slot.getStack() != null) {
+                return slot.getStack().getItemId();
+            }
+        }
+        return null;
+    }
+
     public void equipSlot(int slotIndex) {
         for (int i = 0; i < itemSlots.size(); i++) {
             itemSlots.get(i).setEquipped(i == slotIndex);

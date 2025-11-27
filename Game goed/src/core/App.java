@@ -139,19 +139,19 @@ public class App {
 
             glDisable(GL_DEPTH_TEST);
             // render debug lines for world objects
-            for (Object obj : worldObjectList) {
-                if (obj == null) continue;
+            // for (Object obj : worldObjectList) {
+            //     if (obj == null) continue;
 
-                CollisionBox collisionBox = obj.getCollisionBox();
-                if (collisionBox != null) {
-                    collisionBox.render(lineShader, viewMatrix, projectionMatrix);
-                }
+            //     CollisionBox collisionBox = obj.getCollisionBox();
+            //     if (collisionBox != null) {
+            //         collisionBox.render(lineShader, viewMatrix, projectionMatrix);
+            //     }
 
-                CollisionBox interactionBox = obj.getInteractionBox();
-                if (interactionBox != null) {
-                    interactionBox.render(lineShader, viewMatrix, projectionMatrix);
-                }
-            }
+            //     CollisionBox interactionBox = obj.getInteractionBox();
+            //     if (interactionBox != null) {
+            //         interactionBox.render(lineShader, viewMatrix, projectionMatrix);
+            //     }
+            // }
 
             glEnable(GL_DEPTH_TEST);
 

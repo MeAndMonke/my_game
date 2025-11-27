@@ -24,6 +24,8 @@ public class Player extends Entity {
     private UIManager uiManager = new UIManager();
     private HotBar hotBar;
     private Inventory inventory;
+
+    private String equippedItem = null;
     
     private List<Object> worldObjects = App.getWorldObjects();
 
@@ -36,10 +38,13 @@ public class Player extends Entity {
         this.inventory = new Inventory(this);
         uiManager.addInventory(inventory);
 
-        Stack stick = new Stack("stick", 12);
+        Stack axe = new Stack("basic.axe", 1);
+        Stack pickaxe = new Stack("basic.pickaxe", 1);
         Stack stick2 = new Stack("stick", 8);
+
         inventory.addItem(stick2);
-        hotBar.setItemInSlot(0, stick);
+        hotBar.setItemInSlot(0, axe);
+        hotBar.setItemInSlot(1, pickaxe);
     }
 
     public Vector3f getRotation(Vector3f direction) {
@@ -69,6 +74,7 @@ public class Player extends Entity {
         for (int i = 0; i < hotBar.itemSlots.size(); i++) {
             if (inputHandler.isKeyDown(KeyEvent.VK_1 + i)) {
                 hotBar.equipSlot(i);
+                equippedItem = hotBar.getItemInSlot(i);
             }
         }
 
@@ -96,6 +102,17 @@ public class Player extends Entity {
         Object toRemove = null;
         for (Object obj : worldObjects) {
             if (obj == null) continue;
+
+            String[] required = obj.getToolsRequired();
+            if (required != null && required.length > 0) {
+                // if player has no equipped tool, can't break
+                if (equippedItem == null) continue;
+                boolean ok = false;
+                for (String r : required) {
+                    if (r != null && r.equals(equippedItem)) { ok = true; break; }
+                }
+                if (!ok) continue;
+            }
 
             if (obj.inRange()) {
                 List<Stack> drops = obj.breakObject();
