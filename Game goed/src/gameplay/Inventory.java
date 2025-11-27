@@ -12,35 +12,51 @@ public class Inventory {
     private List<Stack> items = new ArrayList<>();
     private UIInventory uiInventory;
     private boolean isOpen = false;
+    private Player player;
+    private final int slotCount = 10;
 
     public Inventory(Player player) {
-        uiInventory = new UIInventory(10, player);
+        this.player = player;
+        // initialize fixed-size inventory
+        for (int i = 0; i < slotCount; i++) items.add(null);
+        uiInventory = new UIInventory(slotCount, this);
     }
 
     public void addItem(Stack stack) {
-        if (!items.contains(stack)) {
-            items.add(stack);
-            return;
+        // try to merge into existing stacks first
+        for (int i = 0; i < items.size(); i++) {
+            Stack s = items.get(i);
+            if (s != null && s.getItemId().equals(stack.getItemId())) {
+                int space = s.getMaxStackSize() - s.getAmount();
+                if (space >= stack.getAmount()) {
+                    s.setQuantity(s.getAmount() + stack.getAmount());
+                    return;
+                } else if (space > 0) {
+                    s.setQuantity(s.getAmount() + space);
+                    stack.setQuantity(stack.getAmount() - space);
+                }
+            }
         }
-
-        Stack existingStack = items.get(items.indexOf(stack));
-
-        int max = existingStack.getMaxStackSize();
-        int current = existingStack.getQuantity();
-        int incoming = stack.getQuantity();
-
-        int total = current + incoming;
-
-        if (total <= max) {
-            existingStack.setQuantity(total);
-        } else {
-            existingStack.setQuantity(max);
-            int leftover = total - max;
-
-            Stack newStack = new Stack(stack.getItemId(), leftover);
-
-            addItem(newStack);
+        // place leftover into first empty slot
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i) == null) {
+                items.set(i, stack);
+                return;
+            }
         }
+        // inventory full: drop or ignore (currently ignore)
+    }
+
+    public Player getPlayer() { return player; }
+
+    public int getSlotCount() { return slotCount; }
+
+    public Stack getSlot(int index) { return items.get(index); }
+
+    public void setSlot(int index, Stack stack) { items.set(index, stack); }
+
+    public void update(float dt) {
+        uiInventory.update(dt);
     }
 
 

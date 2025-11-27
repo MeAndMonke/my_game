@@ -1,16 +1,12 @@
 package ui;
 
-import org.w3c.dom.css.RGBColor;
-
-import items.Item;
 import items.Stack;
 
-import static org.lwjgl.opengl.GL11.glColor4f;
-
 public class UIItemSlot extends UIElement {
-    private Item item;
     private Stack stack;
     private boolean equipped;
+    private boolean hovered = false;
+    private core.InputHandler inputHandler = core.App.getInputHandler();
     
     public UIItemSlot(float x, float y, float size) {
         this.x = x;
@@ -35,9 +31,13 @@ public class UIItemSlot extends UIElement {
         this.equipped = equipped;
     }
 
+    public boolean isHovered() { return hovered; }
+
     @Override
     public void update(float dt) {
-        return;
+        double mx = inputHandler.getMouseX();
+        double my = inputHandler.getMouseY();
+        hovered = mx >= x && mx <= x + width && my >= y && my <= y + height;
     }
 
     @Override
@@ -46,9 +46,7 @@ public class UIItemSlot extends UIElement {
             drawRect(x - 5, y - 5, width + 10, height + 10, 255, 215, 0, 255);
         }
         drawRect(x, y, width, height, 100, 100, 100, 200);
-
-        // `setItem` stores a Stack in the `stack` field; `item` is unused.
-        // Check `stack` (and that it contains a valid Item/image) before drawing.
+        
         if (stack != null && stack.getItem() != null && stack.getItem().getImage() != null) {
             drawImage(stack.getItem().getImage(), x + 10, y + 10, width - 20, height - 20);
             drawText(stack.getAmount() + "", x + width - 20, y + height - 20, 15);

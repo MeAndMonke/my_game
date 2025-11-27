@@ -35,6 +35,8 @@ public class Player extends Entity {
         uiManager.addInventory(inventory);
 
         Stack stick = new Stack("stick", 12);
+        Stack stick2 = new Stack("stick", 8);
+        inventory.addItem(stick2);
         hotBar.setItemInSlot(0, stick);
     }
 
@@ -57,6 +59,7 @@ public class Player extends Entity {
         if (inputHandler.isKeyDown(GLFW_KEY_D)) direction.x += 1;
 
         if (inputHandler.isKeyPressed(GLFW_KEY_E)) inventory.toggleInventory();
+        inventory.update(deltaTime);
 
         // hotbar input
         for (int i = 0; i < hotBar.itemSlots.size(); i++) {
