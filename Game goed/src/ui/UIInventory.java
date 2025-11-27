@@ -266,13 +266,6 @@ public class UIInventory extends UIElement {
             slot.render();
         }
 
-        if (heldStack != null && heldStack.getItem() != null && heldStack.getItem().getImage() != null) {
-            double mx = App.getInputHandler().getMouseX();
-            double my = App.getInputHandler().getMouseY();
-            drawImage(heldStack.getItem().getImage(), (float)mx - slotSize/2, (float)my - slotSize/2, slotSize, slotSize);
-            drawText(heldStack.getAmount() + "", (float)mx + slotSize/2 - 20, (float)my + slotSize/2 - 20, 15);
-        }
-
         for (int i = 0; i < hotbar.itemSlots.size(); i++) {
             UIItemSlot slot = hotbar.itemSlots.get(i);
             slot.getStack();
@@ -286,6 +279,13 @@ public class UIInventory extends UIElement {
                 drawImage(slot.getStack().getItem().getImage(), x + 5, y + 5, slotSize - 10, slotSize - 10);
                 drawText(slot.getStack().getAmount() + "", x + slotSize - 30, y + slotSize - 30, 25);
             }
+        }
+
+        if (heldStack != null && heldStack.getItem() != null && heldStack.getItem().getImage() != null) {
+            double mx = App.getInputHandler().getMouseX();
+            double my = App.getInputHandler().getMouseY();
+            drawImage(heldStack.getItem().getImage(), (float)mx - slotSize/2, (float)my - slotSize/2, slotSize, slotSize);
+            drawText(heldStack.getAmount() + "", (float)mx + slotSize/2 - 20, (float)my + slotSize/2 - 20, 15);
         }
     }    
 }
