@@ -1,6 +1,7 @@
 package entity;
 
 import java.io.FileInputStream;
+import java.nio.file.Paths;
 import org.joml.Vector3f;
 import renderer.Model;
 import renderer.Shader;
@@ -17,15 +18,18 @@ import items.Stack;
 
 public class ConfigLoader {
 
+    private static final ModelHandler modelHandler = new ModelHandler();
+
     public static Model loadModel(String configPath, Shader shader, Vector3f position, Vector3f rotation) {
-        try (FileInputStream fis = new FileInputStream(configPath)) {
-            JSONObject json = new JSONObject(new JSONTokener(fis));
+        try {
+            JSONObject json = resolveConfig(configPath);
 
             String modelPath = json.getString("modelPath");
             String texturePath = json.getString("texturePath");
             float scale = json.getFloat("scale");
 
-            return new Model(modelPath, shader, position, rotation, scale, new Texture(texturePath));
+            // Use ModelHandler cache so mesh/buffers are loaded once and instances reuse them
+            return modelHandler.getModel(modelPath, shader, position, rotation, scale, new Texture(texturePath));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -33,8 +37,8 @@ public class ConfigLoader {
     }
 
     public static CollisionBox loadCollisionBox(String collisionPath, Vector3f position) {
-        try (FileInputStream fis = new FileInputStream(collisionPath)) {
-            JSONObject json = new JSONObject(new JSONTokener(fis));
+        try {
+            JSONObject json = resolveConfig(collisionPath);
 
             float width = json.getFloat("width");
             float height = json.getFloat("height");
@@ -49,8 +53,8 @@ public class ConfigLoader {
     }
 
     public static String getCollisionPath(String configPath) {
-        try (FileInputStream fis = new FileInputStream(configPath)) {
-            JSONObject json = new JSONObject(new JSONTokener(fis));
+        try {
+            JSONObject json = resolveConfig(configPath);
             return json.getString("collisionPath");
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,9 +64,8 @@ public class ConfigLoader {
 
     public static boolean getInteractable(String configPath) {
         try {
-            FileInputStream fis = new FileInputStream(configPath);
-            JSONObject json = new JSONObject(new JSONTokener(fis));
-            return json.getBoolean("interactable");
+            JSONObject json = resolveConfig(configPath);
+            return json.optBoolean("interactable", false);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -71,9 +74,8 @@ public class ConfigLoader {
 
     public static String getInteractableType(String configPath) {
         try {
-            FileInputStream fis = new FileInputStream(configPath);
-            JSONObject json = new JSONObject(new JSONTokener(fis));
-            return json.getString("interactableType");
+            JSONObject json = resolveConfig(configPath);
+            return json.optString("interactableType", null);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -82,9 +84,9 @@ public class ConfigLoader {
 
     public static String[] getToolsRequired(String configPath) {
         try {
-            FileInputStream fis = new FileInputStream(configPath);
-            JSONObject json = new JSONObject(new JSONTokener(fis));
-            var jsonArray = json.getJSONArray("toolsRequired");
+            JSONObject json = resolveConfig(configPath);
+            var jsonArray = json.optJSONArray("toolsRequired");
+            if (jsonArray == null) return new String[0];
             String[] tools = new String[jsonArray.length()];
             for (int i = 0; i < jsonArray.length(); i++) {
                 tools[i] = jsonArray.getString(i);
@@ -97,10 +99,10 @@ public class ConfigLoader {
     }
 
     public static CollisionBox loadInteractionBox(String collisionPath, Vector3f position) {
-        try (FileInputStream fis = new FileInputStream(collisionPath)) {
-            JSONObject json = new JSONObject(new JSONTokener(fis));
+        try {
+            JSONObject json = resolveConfig(collisionPath);
 
-            float interactionWidth = json.getFloat("interactionWidth");
+            float interactionWidth = json.optFloat("interactionWidth", 0f);
             float width = json.getFloat("width");
             float height = json.getFloat("height");
             float offsetX = json.getFloat("offsetX");
@@ -114,9 +116,9 @@ public class ConfigLoader {
     }
 
     public static float getScale(String configPath) {
-        try (FileInputStream fis = new FileInputStream(configPath)) {
-            JSONObject json = new JSONObject(new JSONTokener(fis));
-            return json.getFloat("scale");
+        try {
+            JSONObject json = resolveConfig(configPath);
+            return json.optFloat("scale", 1.0f);
         } catch (Exception e) {
             e.printStackTrace();
             return 1.0f;
@@ -125,8 +127,8 @@ public class ConfigLoader {
 
     public static List<Stack> getDrops(String configPath) {
         List<Stack> drops = new ArrayList<>();
-        try (FileInputStream fis = new FileInputStream(configPath)) {
-            JSONObject json = new JSONObject(new JSONTokener(fis));
+        try {
+            JSONObject json = resolveConfig(configPath);
             // Support two formats for "drops":
             // 1) Object mapping: { "itemId": {"min":1,"max":3,"chance":0.9}, ... }
             // 2) Array list: [ {"itemType":"id","quantity":n}, ... ]
@@ -160,5 +162,28 @@ public class ConfigLoader {
             e.printStackTrace();
         }
         return drops;
+    }
+
+    /**
+     * Resolve a config JSON. If `configPath` points to a real file it is loaded directly.
+     * Otherwise we try to find an entry in `res/models/model_configs.json` whose `id`
+     * matches the filename (without extension) of `configPath`.
+     */
+    private static JSONObject resolveConfig(String configPath) throws Exception {
+        try (FileInputStream fis = new FileInputStream(configPath)) {
+            return new JSONObject(new JSONTokener(fis));
+        } catch (Exception e) {
+            // fallback to model_configs.json lookup by id (filename without extension)
+            try (FileInputStream fis = new FileInputStream("res/models/model_configs.json")) {
+                JSONArray arr = new JSONArray(new JSONTokener(fis));
+                String fileName = Paths.get(configPath).getFileName().toString();
+                String id = fileName.contains(".") ? fileName.substring(0, fileName.lastIndexOf('.')) : fileName;
+                for (int i = 0; i < arr.length(); i++) {
+                    JSONObject obj = arr.getJSONObject(i);
+                    if (id.equals(obj.optString("id"))) return obj;
+                }
+            }
+            throw new java.io.FileNotFoundException(configPath);
+        }
     }
 }

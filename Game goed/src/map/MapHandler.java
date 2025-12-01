@@ -1,7 +1,6 @@
 package map;
 
 import entity.Object;
-import physics.CollisionBox;
 import renderer.Shader;
 
 import org.joml.Matrix4f;
@@ -42,27 +41,12 @@ public class MapHandler {
             }
         }
     }
-    private void createRandomTree(int maxX, int maxY) {
-        int x = (int)(Math.random() * maxX);
-        int y = (int)(Math.random() * maxY);
-
-        Vector3f rotation = new Vector3f(0, (float)(Math.random() * 360), 0);
-        if (mapObjects[x][y] == null) {
-            mapObjects[x][y] = createObject("res/models/configs/tree.json", new Vector3f(x * 2,0,y * 2), rotation);
-        }
-    }
 
     private Object createObject(String configPath, Vector3f position, Vector3f rotation) {
         Object tree =  new Object(configPath, shader, position, rotation);
-    
         App.addWorldObject(tree);
-
         return tree;
     }
-
-    // public CollisionBox getAllColliosBox() {
-
-    // }
 
     public void render(Matrix4f viewMatrix, Matrix4f projectionMatrix) {
         for (int x = 0; x < mapObjects.length; x++) {

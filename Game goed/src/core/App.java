@@ -69,14 +69,11 @@ public class App {
         String fragmentShaderCode = loadShaderSource("res/shaders/default.frag");
         Shader shader = new Shader(vertexShaderCode, fragmentShaderCode);
         
-        String lineVert = loadShaderSource("res/shaders/line.vert");
-        String lineFrag = loadShaderSource("res/shaders/line.frag");
-        Shader lineShader = new Shader(lineVert, lineFrag);
+        // String lineVert = loadShaderSource("res/shaders/line.vert");
+        // String lineFrag = loadShaderSource("res/shaders/line.frag");
+        // Shader lineShader = new Shader(lineVert, lineFrag);
 
-        // keep a reference to the map handler so other systems can remove objects
         mapHandler = new MapHandler(10, 10, shader);
-        System.out.println("Interactable boxes registered: " + worldObjectList.size());
-        
         player = new Player(new Vector3f(0,0,5), shader);
 
         long lastTime = System.nanoTime();
@@ -87,7 +84,8 @@ public class App {
         shader.setVec3("objectColor", new Vector3f(1, 1, 1));
         shader.unbind();
 
-        while (!glfwWindowShouldClose(window)) {
+        try {
+            while (!glfwWindowShouldClose(window)) {
 
             long now = System.nanoTime();
             float deltaTime = (now - lastTime) / 1_000_000_000.0f;
@@ -179,10 +177,22 @@ public class App {
 
             glEnable(GL_DEPTH_TEST);
 
-            glfwSwapBuffers(window);
-            glfwPollEvents();
+                glfwSwapBuffers(window);
+                glfwPollEvents();
 
+            }
+        } finally {
+            cleanup();
         }
+    }
+
+    private static void cleanup() {
+        // Destroy window and terminate GLFW
+        if (window != 0) {
+            glfwDestroyWindow(window);
+            window = 0;
+        }
+        glfwTerminate();
     }
 
     public static InputHandler getInputHandler() {
@@ -226,7 +236,7 @@ public class App {
         return width;
     }
 
-    public Player getPlayer() {
+    public static Player getPlayer() {
         return player;
     }
 
@@ -238,9 +248,7 @@ public class App {
 
     public static void removeWorldObject(Object obj) {
         if (obj == null) return;
-        // remove from list
         worldObjectList.remove(obj);
-        // if map handler exists, ask it to remove the reference from the map grid
         if (mapHandler != null) {
             mapHandler.removeObject(obj);
         }

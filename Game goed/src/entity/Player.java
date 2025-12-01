@@ -24,6 +24,10 @@ public class Player extends Entity {
     private UIManager uiManager = new UIManager();
     private HotBar hotBar;
     private Inventory inventory;
+    private int level = 0;
+
+    public int getLevel() { return level; }
+    public void setLevel(int level) { this.level = level; }
 
     private String equippedItem = null;
     
@@ -37,6 +41,10 @@ public class Player extends Entity {
 
         this.inventory = new Inventory(this);
         uiManager.addInventory(inventory);
+        // create craft ui and craft item ui
+        gameplay.CraftingManager craftingManager = new gameplay.CraftingManager("res/items/items.json");
+        uiManager.add(new ui.UICrafting(craftingManager, inventory, this, uiManager));
+        uiManager.add(new ui.UICraftItem(craftingManager, inventory, this, uiManager));
 
         Stack axe = new Stack("basic.axe", 1);
         Stack pickaxe = new Stack("basic.pickaxe", 1);
@@ -48,7 +56,7 @@ public class Player extends Entity {
     }
 
     public Vector3f getRotation(Vector3f direction) {
-        if (direction.lengthSquared() == 0) return new Vector3f(0, 0, 0); // No movement
+        if (direction.lengthSquared() == 0) return new Vector3f(0, 0, 0);
 
         // atan2 returns angle in radians, convert to degrees
         float yaw = (float) Math.toDegrees(Math.atan2(direction.x, direction.z));
@@ -58,6 +66,10 @@ public class Player extends Entity {
     public void update(float deltaTime) {
         float speed = 5.0f;
         Vector3f direction = new Vector3f();
+        
+        if (inputHandler.isKeyPressed(GLFW_KEY_C)) {
+            uiManager.toggleCrafting();
+        }
 
         // movement input
         if (inputHandler.isKeyDown(GLFW_KEY_W)) direction.z -= 1;
@@ -65,8 +77,9 @@ public class Player extends Entity {
         if (inputHandler.isKeyDown(GLFW_KEY_A)) direction.x -= 1;
         if (inputHandler.isKeyDown(GLFW_KEY_D)) direction.x += 1;
 
-        if (inputHandler.isKeyPressed(GLFW_KEY_E)) inventory.toggleInventory();
+        if (inputHandler.isKeyPressed(GLFW_KEY_E)) uiManager.toggleInventory();
         inventory.update(deltaTime);
+        uiManager.update(deltaTime);
 
         if (inputHandler.isKeyPressed(GLFW_KEY_SPACE)) breakObjectInFront();
 

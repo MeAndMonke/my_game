@@ -22,7 +22,6 @@ public class Object {
 
     private boolean inRange = false;
     
-    private String interactableType;
     private String[] toolsRequired;
     private List<Stack> drops;
 
@@ -46,7 +45,6 @@ public class Object {
         }
 
 
-        this.interactableType = ConfigLoader.getInteractableType(configPath);
         this.toolsRequired = ConfigLoader.getToolsRequired(configPath);
         this.scale = ConfigLoader.getScale(configPath);
 

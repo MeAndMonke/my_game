@@ -47,6 +47,37 @@ public class Inventory {
         // inventory full: drop or ignore (currently ignore)
     }
 
+    /**
+     * Returns true if the inventory contains at least `qty` of `itemId`.
+     */
+    public boolean hasItemQuantity(String itemId, int qty) {
+        int found = 0;
+        for (Stack s : items) {
+            if (s == null) continue;
+            if (s.getItemId().equals(itemId)) found += s.getAmount();
+            if (found >= qty) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Remove `qty` items with `itemId` from inventory. Returns true if fully removed.
+     */
+    public boolean removeItemQuantity(String itemId, int qty) {
+        int remaining = qty;
+        for (int i = 0; i < items.size(); i++) {
+            Stack s = items.get(i);
+            if (s == null) continue;
+            if (!s.getItemId().equals(itemId)) continue;
+            int take = Math.min(s.getAmount(), remaining);
+            s.setQuantity(s.getAmount() - take);
+            remaining -= take;
+            if (s.getAmount() <= 0) items.set(i, null);
+            if (remaining <= 0) return true;
+        }
+        return false;
+    }
+
     public Player getPlayer() { return player; }
 
     public int getSlotCount() { return slotCount; }
@@ -56,7 +87,9 @@ public class Inventory {
     public void setSlot(int index, Stack stack) { items.set(index, stack); }
 
     public void update(float dt) {
-        uiInventory.update(dt);
+        if (isOpen) {
+            uiInventory.update(dt);
+        }
     }
 
 
@@ -67,6 +100,8 @@ public class Inventory {
     public void toggleInventory() {
         isOpen = !isOpen;
     }
+
+    public boolean isOpen() { return isOpen; }
 
     public void render() {
         if (!isOpen) return;

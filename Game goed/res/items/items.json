@@ -46,6 +46,8 @@
         "max_durability": 25,
         "durability": 25,
 
+        "level_required": 0,
+
         "recipe": {
             "stick": 2,
             "stone": 1
@@ -65,9 +67,27 @@
         "max_durability": 25,
         "durability": 25,
 
+        "level_required": 0,
+
         "recipe": {
             "stick": 2,
             "stone": 2
         }
+    },
+    {
+        "id": "campfire",
+        "name": "Campfire",
+        "description": "A small campfire used for cooking and warmth.",
+        "maxStackSize": 1,
+        "texture": "res/textures/items/campfire.png",
+        "weight": 5.0,
+        "value": 10.0,
+        "rarity": "uncommon",
+        "recipe": {
+            "log": 3,
+            "stone": 2
+        },
+        "placeable": true,
+        "modelId": "campfire"
     }
 ]

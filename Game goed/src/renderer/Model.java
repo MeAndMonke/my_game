@@ -41,6 +41,27 @@ public class Model {
         setupMesh();
     }
 
+    // Private constructor used for creating lightweight instances that share GPU buffers
+    private Model(Shader shader, Vector3f position, Vector3f rotation, float scale, Texture texture,
+                  AIMesh mesh, int vao, int vbo, int vboNormal, int ebo, int vboTexCoords, int vertexCount) {
+        this.shader = shader;
+        this.position = position;
+        this.rotation = rotation;
+        this.scale = scale;
+        this.texture = texture;
+
+        this.mesh = mesh;
+        this.vao = vao;
+        this.vbo = vbo;
+        this.vboNormal = vboNormal;
+        this.ebo = ebo;
+        this.vboTexCoords = vboTexCoords;
+        this.vertexCount = vertexCount;
+
+        this.modelMatrix = computeModelMatrix();
+        // NOTE: do NOT call setupMesh() here because we are reusing buffers from prototype
+    }
+
     private void setupMesh() {
         float[] vertices = extractVertices(mesh);
         float[] normals  = extractNormals(mesh);
@@ -114,6 +135,17 @@ public class Model {
     public void setScale(float scale) {
         this.scale = scale;
         modelMatrix = computeModelMatrix();
+    }
+
+    public Model createInstance(Vector3f position, Vector3f rotation, float scale, Texture texture, Shader shader) {
+        Shader useShader = shader != null ? shader : this.shader;
+        Texture useTexture = texture != null ? texture : this.texture;
+        Vector3f usePos = position != null ? new Vector3f(position) : new Vector3f(this.position);
+        Vector3f useRot = rotation != null ? new Vector3f(rotation) : new Vector3f(this.rotation);
+        float useScale = scale != 0f ? scale : this.scale;
+
+        return new Model(useShader, usePos, useRot, useScale, useTexture,
+                this.mesh, this.vao, this.vbo, this.vboNormal, this.ebo, this.vboTexCoords, this.vertexCount);
     }
 
     private Matrix4f computeModelMatrix() {
