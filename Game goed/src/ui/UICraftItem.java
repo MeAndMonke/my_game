@@ -53,7 +53,7 @@ public class UICraftItem extends UIElement {
     public void render() {
         if (!open || recipe == null) return;
 
-        drawRect(panelX, panelY, panelW, panelH, 60, 60, 60, 230);
+        drawRect(panelX, panelY, panelW, panelH, new Color4(60, 60, 60, 230));
 
         // item image
         Item item = App.itemManager.getItemById(recipe.id);
@@ -89,8 +89,8 @@ public class UICraftItem extends UIElement {
         float btnY = panelY + panelH - btnH - 12;
 
         boolean canCraft = craftingManager.canCraft(inventory, recipe, player.getLevel());
-        if (canCraft) drawRect(btnX, btnY, btnW, btnH, 100, 180, 100, 220);
-        else drawRect(btnX, btnY, btnW, btnH, 120, 120, 120, 200);
+        if (canCraft) drawRect(btnX, btnY, btnW, btnH, new Color4(100, 180, 100, 220));
+        else drawRect(btnX, btnY, btnW, btnH, new Color4(120, 120, 120, 200));
 
         drawText("Craft", btnX + 30, btnY + 6, 18);
 
@@ -98,7 +98,7 @@ public class UICraftItem extends UIElement {
         float xSize = 32;
         float xX = panelX + panelW - xSize - 8;
         float xY = panelY + 8;
-        drawRect(xX, xY, xSize, xSize, 200, 80, 80, 220);
+        drawRect(xX, xY, xSize, xSize, new Color4(200, 80, 80, 220));
         drawText("X", xX + 12, xY + 6, 14);
     }
 

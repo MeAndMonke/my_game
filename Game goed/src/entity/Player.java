@@ -63,10 +63,6 @@ public class Player extends Entity {
         // initialize buildManager to null; will be created when holding a placeable item
     }
 
-    /**
-     * @param direction direction vector
-     * @return rotation in degrees
-     */
     public Vector3f getRotation(Vector3f direction) {
         if (direction.lengthSquared() == 0) return new Vector3f(0, 0, 0);
 
@@ -160,9 +156,6 @@ public class Player extends Entity {
         }
     }
 
-    /**
-     * Breaks object near player.
-     */
     public void breakObjectInFront() {
         Object toRemove = null;
         for (Object obj : worldObjects) {

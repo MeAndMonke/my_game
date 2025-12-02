@@ -19,7 +19,7 @@ public class UIBlock extends UIElement {
     }
 
     public void render() {
-        drawRect(x, y, width, height, r, g, b, a);
+        drawRect(x, y, width, height,  new Color4(r, g, b, a));
     }
 
     @Override

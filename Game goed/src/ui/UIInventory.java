@@ -254,7 +254,7 @@ public class UIInventory extends UIElement {
 
     @Override
     public void render() {
-        drawRect(0, 0, 500, App.getWindowHeight(), 100, 100, 100, 150);
+        drawRect(0, 0, 500, App.getWindowHeight(), new Color4(100, 100, 100, 150));
 
         for (int i = 0; i < slots; i++) {
             UIInventorySlot slot = inventorySlots[i];
@@ -276,7 +276,7 @@ public class UIInventory extends UIElement {
             float x = (i * (slotSize + padding)) + xOffset;
             float y = App.getWindowHeight() - (yOffset + slotSize) + 10;
 
-            drawRect(x, y, slotSize, slotSize, 150, 150, 150, 200);
+            drawRect(x, y, slotSize, slotSize, new Color4(150, 150, 150, 200));
 
             if (slot.getStack() != null && slot.getStack().getItem() != null && slot.getStack().getItem().getImage() != null) {
                 drawImage(slot.getStack().getItem().getImage(), x + 5, y + 5, slotSize - 10, slotSize - 10);

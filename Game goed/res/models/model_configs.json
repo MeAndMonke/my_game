@@ -31,7 +31,7 @@
                 "maxDistance": 15
             },
             "flee": {
-                "triggerDistance": 4,
+                "triggerDistance": 5,
                 "duration": 5,
                 "speedMultiplier": 2,
                 "entitys": [
@@ -51,7 +51,7 @@
             "offsetY": 0,
             "interactionWidth": 2
         },
-        "texturePath": "res/textures/rock/1.png",
+        "texturePath": "res/textures/rock/3.png",
         "scale": 0.4,
         "interactable": true,
         "interactableType": "breakable",

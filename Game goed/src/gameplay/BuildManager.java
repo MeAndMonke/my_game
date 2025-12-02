@@ -7,9 +7,6 @@ import renderer.Shader;
 
 import core.App;
 
-/**
- * BuildManager handles previewing and placing an object model in the world.
- */
 public class BuildManager {
 
     private String configPath;

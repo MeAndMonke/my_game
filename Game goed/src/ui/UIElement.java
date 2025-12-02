@@ -16,12 +16,25 @@ public abstract class UIElement {
     public abstract void render();
     public abstract void onClick(double mx, double my);
 
-    public void drawRect(float x, float y, float w, float h, int r, int g, int b, int a) {
+
+
+    /**
+     * Draw a colored rectangle at specified position and size.
+     * @param x The x position.
+     * @param y The y position.
+     * @param w The width.
+     * @param h The height.
+     * @param r Red component (0-255).
+     * @param g Green component (0-255).
+     * @param b Blue component (0-255).
+     * @param a Alpha component (0-255).
+     */
+    public void drawRect(float x, float y, float w, float h, Color4 color) {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-        glColor4f(r / 255f, g / 255f, b / 255f, a / 255f);
+        glColor4f(color.r / 255f, color.g / 255f, color.b / 255f, color.a / 255f);
         glBegin(GL_QUADS);
             glVertex2f(x, y);
             glVertex2f(x + w, y);

@@ -46,6 +46,7 @@ public class UICrafting extends UIElement {
         double mx = App.getInputHandler().getMouseX();
         double my = App.getInputHandler().getMouseY();
 
+        // handle scrolling and hovering
         boolean mouseDown = App.getInputHandler().isMouseDown(GLFW_MOUSE_BUTTON_LEFT);
         if (mouseDown && !lastMouseDown) {
             lastMouseY = my;
@@ -54,8 +55,7 @@ public class UICrafting extends UIElement {
             if (dragging) {
                 double dy = my - lastMouseY;
                 if (Math.abs(dy) < 5) {
-                    // if another UI element consumed the click (e.g. closing detail),
-                    // clear the consumed flag and don't handle the click here.
+                    // if another UI element consumed the click
                     if (uiManager.isClickConsumed()) {
                         uiManager.clearClickConsumed();
                     } else {
@@ -66,12 +66,14 @@ public class UICrafting extends UIElement {
             dragging = false;
         }
 
+        // continue dragging
         if (mouseDown && dragging) {
             double dy = my - lastMouseY;
             scrollY -= dy;
             lastMouseY = my;
         }
 
+        // clamp scrollY
         float contentHeight = recipes.size() * (buttonHeight + padding);
         if (scrollY < 0) scrollY = 0;
         float panelHeight = App.getWindowHeight();
@@ -96,10 +98,11 @@ public class UICrafting extends UIElement {
     public void render() {
         float panelWidth = 500f;
         float panelHeight = App.getWindowHeight();
-        drawRect(0, 0, panelWidth, panelHeight, 80, 80, 80, 200);
+        drawRect(0, 0, panelWidth, panelHeight, new Color4(80, 80, 80, 200));
 
         float btnW = panelWidth - xOffset * 2;
 
+        // draw recipe buttons
         for (int i = 0; i < recipes.size(); i++) {
             Recipe r = recipes.get(i);
             float rx = xOffset;
@@ -107,19 +110,22 @@ public class UICrafting extends UIElement {
 
             if (ry + buttonHeight < 0 || ry > panelHeight) continue;
 
+            // hover effect
             boolean hover = (i == hoveredIndex);
             boolean canCraft = craftingManager.canCraft(inventory, r, player.getLevel());
 
             if (hover) {
-                drawRect(rx - 2, ry - 2, btnW + 4, buttonHeight + 4, 200, 200, 200, 80);
+                drawRect(rx - 2, ry - 2, btnW + 4, buttonHeight + 4, new Color4(200, 200, 200, 80));
             }
 
+            // button background
             if (!canCraft) {
-                drawRect(rx, ry, btnW, buttonHeight, 80, 80, 80, 200);
+                drawRect(rx, ry, btnW, buttonHeight, new Color4(80, 80, 80, 200));
             } else {
-                drawRect(rx, ry, btnW, buttonHeight, 140, 140, 140, 220);
+                drawRect(rx, ry, btnW, buttonHeight, new Color4(140, 140, 140, 220));
             }
 
+            // draw item image
             BufferedImage img = null;
             Item item = App.itemManager.getItemById(r.id);
             if (item != null) img = item.getImage();
@@ -137,6 +143,7 @@ public class UICrafting extends UIElement {
                 }
             }
 
+            // draw name and ingredients
             String name = r.name != null ? r.name : r.id;
             drawText(name, imgX + imgSize + 10, ry + (buttonHeight / 2f) - 10, 20);
 
@@ -150,8 +157,9 @@ public class UICrafting extends UIElement {
             }
             drawText(reqs, imgX + imgSize + 10, ry + (buttonHeight / 2f) + 10, 14);
 
+            // overlay if cannot craft
             if (!canCraft) {
-                drawRect(rx, ry, btnW, buttonHeight, 0, 0, 0, 120);
+                drawRect(rx, ry, btnW, buttonHeight, new Color4(0, 0, 0, 120));
             }
         }
     }
@@ -160,36 +168,14 @@ public class UICrafting extends UIElement {
     public void onClick(double mx, double my) {
         if (!uiManager.isCraftingOpen()) return;
 
-        UICraftItem detail = uiManager.getCraftItemElement();
-        if (detail != null && detail.isOpen()) return;
-
-        float panelWidth = 500f;
-        float panelHeight = App.getWindowHeight();
-        float arrowSize = 24f;
-        float upAx = xOffset - 40;
-        float upAy = yOffset - 20;
-        float downAx = panelWidth - xOffset + 10;
-        float downAy = panelHeight - yOffset - arrowSize + 20;
-        float innerHeight = panelHeight - yOffset * 2;
-
-        if (mx >= upAx && mx <= upAx + 30 && my >= upAy && my <= upAy + arrowSize) {
-            scrollY -= innerHeight;
-            if (scrollY < 0) scrollY = 0;
-            return;
-        }
-
-        if (mx >= downAx && mx <= downAx + 30 && my >= downAy && my <= downAy + arrowSize) {
-            float contentHeight = recipes.size() * (buttonHeight + padding);
-            float maxScroll = Math.max(0, contentHeight - innerHeight);
-            scrollY += innerHeight;
-            if (scrollY > maxScroll) scrollY = maxScroll;
-            return;
-        }
+        // check recipe buttons
         for (int i = 0; i < recipes.size(); i++) {
             Recipe r = recipes.get(i);
             float rx = xOffset;
             float ry = yOffset + i * (buttonHeight + padding) - scrollY;
             float btnW = 500f - xOffset * 2;
+
+            // click inside button
             if (mx >= rx && mx <= rx + btnW && my >= ry && my <= ry + buttonHeight) {
                 UICraftItem detailElem = uiManager.getCraftItemElement();
                 if (detailElem == null) {

@@ -45,12 +45,6 @@ public class Inventory {
         }
     }
 
-    /**
-     * Check if the inventory has at least the specified quantity of an item.
-     * @param itemId ID of the item to check.
-     * @param qty Quantity to check for.
-     * @return True if the inventory has at least the specified quantity.
-     */
     public boolean hasItemQuantity(String itemId, int qty) {
         int found = 0;
         for (Stack s : items) {
@@ -61,12 +55,6 @@ public class Inventory {
         return false;
     }
 
-    /**
-     * Remove a quantity of an item from the inventory.
-     * @param itemId ID of the item to remove.
-     * @param qty Quantity to remove.
-     * @return True if the specified quantity was successfully removed.
-     */
     public boolean removeItemQuantity(String itemId, int qty) {
         int remaining = qty;
         for (int i = 0; i < items.size(); i++) {
@@ -96,10 +84,6 @@ public class Inventory {
         }
     }
 
-    /**
-     * Remove an item stack from the inventory.
-     * @param stack The item stack to remove.
-     */
     public void removeItem(Stack stack) {
         items.remove(stack);
     }

@@ -27,9 +27,9 @@ public class UIButton extends UIElement {
     @Override
     public void render() {
         if (hovered) {
-            drawRect(x, y, width, height, 90, 90, 90, 255);
+            drawRect(x, y, width, height, new Color4(90, 90, 90, 255));
         } else {       
-            drawRect(x, y, width, height, 64, 64, 64, 255);
+            drawRect(x, y, width, height, new Color4(64, 64, 64, 255));
         }
 
         drawText(text, x + 10, y + 10, 20);

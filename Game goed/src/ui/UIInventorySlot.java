@@ -24,9 +24,9 @@ public class UIInventorySlot extends UIElement {
 
     public void render() {
         if (hovered) {
-            drawRect(x - 2, y - 2, size + 4, size + 4, 150, 150, 150, 255);
+            drawRect(x - 2, y - 2, size + 4, size + 4, new Color4(150, 150, 150, 255));
         } else {
-            drawRect(x - 2, y - 2, size + 4, size + 4, 120, 120, 120, 255);
+            drawRect(x - 2, y - 2, size + 4, size + 4, new Color4(120, 120, 120, 255));
         }
         if (itemId != null) {
             drawImage(

@@ -43,9 +43,9 @@ public class UIItemSlot extends UIElement {
     @Override
     public void render() {
         if (equipped) {
-            drawRect(x - 5, y - 5, width + 10, height + 10, 255, 215, 0, 255);
+            drawRect(x - 5, y - 5, width + 10, height + 10, new Color4(255, 215, 0, 255));
         }
-        drawRect(x, y, width, height, 100, 100, 100, 200);
+        drawRect(x, y, width, height, new Color4(100, 100, 100, 200));
         
         if (stack != null && stack.getItem() != null && stack.getItem().getImage() != null) {
             drawImage(stack.getItem().getImage(), x + 10, y + 10, width - 20, height - 20);
