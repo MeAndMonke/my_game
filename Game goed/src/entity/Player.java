@@ -142,17 +142,44 @@ public class Player extends Entity {
 
             collisionBox.setPosition(newPos);
 
-            boolean collision = CollisionHandler.checkCollision(collisionBox, 
+            boolean collision = CollisionHandler.checkCollision(collisionBox,
                 App.getWorldObjectsCollisionBoxes()
             );
 
+            Vector3f movementApplied = null;
             if (!collision) {
                 setPosition(newPos);
+                movementApplied = new Vector3f(direction);
             } else {
+                // revert collision box to current position
                 collisionBox.setPosition(getPosition());
+
+                // try X axis only
+                Vector3f newPosX = new Vector3f(getPosition()).add(new Vector3f(direction.x, 0, 0));
+                collisionBox.setPosition(newPosX);
+                boolean collisionX = CollisionHandler.checkCollision(collisionBox, App.getWorldObjectsCollisionBoxes());
+
+                if (!collisionX) {
+                    setPosition(newPosX);
+                    movementApplied = new Vector3f(direction.x, 0, 0);
+                } else {
+                    // try z axis only
+                    Vector3f newPosZ = new Vector3f(getPosition()).add(new Vector3f(0, 0, direction.z));
+                    collisionBox.setPosition(newPosZ);
+                    boolean collisionZ = CollisionHandler.checkCollision(collisionBox, App.getWorldObjectsCollisionBoxes());
+
+                    if (!collisionZ) {
+                        setPosition(newPosZ);
+                        movementApplied = new Vector3f(0, 0, direction.z);
+                    } else {
+                        // reset collisionBox back to player
+                        collisionBox.setPosition(getPosition());
+                    }
+                }
             }
 
-            setRotation(getRotation(direction));
+            // use applied movement for rotation
+            setRotation(getRotation(movementApplied != null ? movementApplied : direction));
         }
     }
 

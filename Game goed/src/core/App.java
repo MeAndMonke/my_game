@@ -32,7 +32,7 @@ public class App {
     private static long window;
     private static int width = 1980, height = 1060;
     public static Vector3f cameraPos = new Vector3f(0,0,0);
-    private static Vector3f cameraDir = new Vector3f(0,-2,-1);
+    private static Vector3f cameraDir = new Vector3f(0,-3,-1);
 
     public static InputHandler inputHandler;
     private static List<Object> worldObjectList = new ArrayList<>();
@@ -69,23 +69,20 @@ public class App {
         String fragmentShaderCode = loadShaderSource("res/shaders/default.frag");
         Shader shader = new Shader(vertexShaderCode, fragmentShaderCode);
         
-        // String lineVert = loadShaderSource("res/shaders/line.vert");
-        // String lineFrag = loadShaderSource("res/shaders/line.frag");
-        // Shader lineShader = new Shader(lineVert, lineFrag);
+        String lineVert = loadShaderSource("res/shaders/line.vert");
+        String lineFrag = loadShaderSource("res/shaders/line.frag");
+        Shader lineShader = new Shader(lineVert, lineFrag);
 
-        mapHandler = new MapHandler(10, 10, shader);
-        player = new Player(new Vector3f(0,0,5), shader);
+        mapHandler = new MapHandler(30, 30, shader);
+        player = new Player(new Vector3f(15,0,15), shader);
 
         long lastTime = System.nanoTime();
 
         shader.bind();
-        shader.setVec3("lightPos", new Vector3f(10, 50, 10));
+        shader.setVec3("lightPos", new Vector3f(50, 100, 50));
         shader.setVec3("lightColor", new Vector3f(1, 1, 1));
         shader.setVec3("objectColor", new Vector3f(1, 1, 1));
         shader.unbind();
-
-        Object campfire = new Object("res/models/configs/campfire.json", shader, new Vector3f(2,0,2), new Vector3f(0,0,0));
-        addWorldObject(campfire);
 
         try {
             while (!glfwWindowShouldClose(window)) {
@@ -144,9 +141,9 @@ public class App {
                     }
                 }
 
-            glDisable(GL_DEPTH_TEST);
+            // glDisable(GL_DEPTH_TEST);
             
-            // render debug lines for world objects
+            // // render debug lines for world objects
             // for (Object obj : worldObjectList) {
             //     if (obj == null) continue;
 
@@ -161,7 +158,7 @@ public class App {
             //     }
             // }
 
-            glEnable(GL_DEPTH_TEST);
+            // glEnable(GL_DEPTH_TEST);
 
             // 2D UI rendering
             glUseProgram(0);
