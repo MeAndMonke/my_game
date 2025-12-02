@@ -41,7 +41,6 @@ public class Model {
         setupMesh();
     }
 
-    // Private constructor used for creating lightweight instances that share GPU buffers
     private Model(Shader shader, Vector3f position, Vector3f rotation, float scale, Texture texture,
                   AIMesh mesh, int vao, int vbo, int vboNormal, int ebo, int vboTexCoords, int vertexCount) {
         this.shader = shader;
@@ -59,13 +58,15 @@ public class Model {
         this.vertexCount = vertexCount;
 
         this.modelMatrix = computeModelMatrix();
-        // NOTE: do NOT call setupMesh() here because we are reusing buffers from prototype
     }
 
+    /**
+     * Setup OpenGL buffers for the mesh.
+     */
     private void setupMesh() {
         float[] vertices = extractVertices(mesh);
         float[] normals  = extractNormals(mesh);
-        float[] texCoords = extractTexCoords(mesh); // <--- extract UVs
+        float[] texCoords = extractTexCoords(mesh);
         int[] indices    = extractIndices(mesh);
 
         vao = glGenVertexArrays();
@@ -89,7 +90,7 @@ public class Model {
         vboTexCoords = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboTexCoords);
         glBufferData(GL_ARRAY_BUFFER, texCoords, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(2); // matches 'layout(location = 2)' in shader
+        glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 2, GL_FLOAT, false, 2 * Float.BYTES, 0);
 
         // indices
@@ -109,8 +110,8 @@ public class Model {
         shader.setMat4("projection", projection);
 
         if (texture != null) {
-            texture.bind(0); // bind texture unit 0
-            shader.setInt("textureSampler", 0); // tell shader which unit
+            texture.bind(0);
+            shader.setInt("textureSampler", 0);
         }
 
         glBindVertexArray(vao);
@@ -137,6 +138,15 @@ public class Model {
         modelMatrix = computeModelMatrix();
     }
 
+    /**
+     * Create a lightweight copy of this model instance.
+     * @param position The position of the new instance.
+     * @param rotation The rotation of the new instance.
+     * @param scale The scale of the new instance.
+     * @param texture The texture of the new instance.
+     * @param shader The shader of the new instance.
+     * @return A new Model instance.
+     */
     public Model createInstance(Vector3f position, Vector3f rotation, float scale, Texture texture, Shader shader) {
         Shader useShader = shader != null ? shader : this.shader;
         Texture useTexture = texture != null ? texture : this.texture;
@@ -148,6 +158,10 @@ public class Model {
                 this.mesh, this.vao, this.vbo, this.vboNormal, this.ebo, this.vboTexCoords, this.vertexCount);
     }
 
+    /**
+     * Calculate the model matrix based on position, rotation, and scale.
+     * @return The Calculated model matrix.
+     */
     private Matrix4f computeModelMatrix() {
         return new Matrix4f()
                 .translation(position)
@@ -157,6 +171,11 @@ public class Model {
                 .scale(scale);
     }
 
+    /**
+     * Extract vertex positions from the mesh.
+     * @param mesh The AIMesh to extract vertices from.
+     * @return An array of vertex positions.
+     */
     private float[] extractVertices(AIMesh mesh) {
         float[] vertices = new float[mesh.mNumVertices() * 3];
         for (int i = 0; i < mesh.mNumVertices(); i++) {
@@ -167,6 +186,11 @@ public class Model {
         return vertices;
     }
 
+    /**
+     * Extract vertex normals from the mesh.
+     * @param mesh The AIMesh to extract normals from.
+     * @return An array of vertex normals.
+     */
     private float[] extractNormals(AIMesh mesh) {
         float[] normals = new float[mesh.mNumVertices() * 3];
         for (int i = 0; i < mesh.mNumVertices(); i++) {
@@ -177,6 +201,11 @@ public class Model {
         return normals;
     }
 
+    /**
+     * Extract indices from the mesh.
+     * @param mesh The AIMesh to extract indices from.
+     * @return An array of indices.
+     */
     private int[] extractIndices(AIMesh mesh) {
         int[] indices = new int[mesh.mNumFaces() * 3];
         for (int i = 0; i < mesh.mNumFaces(); i++) {
@@ -187,12 +216,22 @@ public class Model {
         return indices;
     }
 
+    /**
+     * Load a mesh from a file using Assimp.
+     * @param path The path to the model file.
+     * @return The loaded AIMesh.
+     */
     private AIMesh loadMesh(String path) {
         AIScene scene = aiImportFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals);
         if (scene == null) throw new RuntimeException("Failed to load model: " + path);
         return AIMesh.create(scene.mMeshes().get(0));
     }
 
+    /**
+     * Extract texture coordinates from the mesh.
+     * @param mesh The AIMesh to extract texture coordinates from.
+     * @return An array of texture coordinates.
+     */
     private float[] extractTexCoords(AIMesh mesh) {
         float[] texCoords = new float[mesh.mNumVertices() * 2];
         for (int i = 0; i < mesh.mNumVertices(); i++) {

@@ -9,11 +9,11 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
 public class CollisionBox {
-    private Vector3f position; // center position
+    private Vector3f position;
     private float width, height;
     private float offsetX, offsetY;
 
-    // GL objects for drawing a rectangle as a line loop (created once)
+    // OpenGL buffers for rendering
     private int vao = 0;
     private int vboPos = 0;
     private int vboNormal = 0;
@@ -42,6 +42,11 @@ public class CollisionBox {
     public float getWidth() { return width; }
     public float getHeight() { return height; }
 
+    /**
+     * Check if this collision box intersects with another.
+     * @param other The other collision box to check against.
+     * @return True if the boxes intersect.
+     */
     public boolean intersects(CollisionBox other) {
         Vector3f thisPos = getPosition();
         Vector3f otherPos = other.getPosition();
@@ -52,6 +57,9 @@ public class CollisionBox {
         return xOverlap && zOverlap;
     }
 
+    /**
+     * Initialize OpenGL buffers for rendering the collision box.
+    */
     private void ensureInitialized() {
         if (initialized) return;
 
@@ -81,27 +89,32 @@ public class CollisionBox {
 
         int[] indices = new int[] {0,1,2,3};
 
+        // Generate and bind VAO and VBOs
         vao = glGenVertexArrays();
         glBindVertexArray(vao);
 
+        // Position VBO
         vboPos = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboPos);
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0);
 
+        // Normal VBO
         vboNormal = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboNormal);
         glBufferData(GL_ARRAY_BUFFER, normals, GL_STATIC_DRAW);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 3, GL_FLOAT, false, 3 * Float.BYTES, 0);
 
+        // Texture Coord VBO
         vboTex = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboTex);
         glBufferData(GL_ARRAY_BUFFER, texcoords, GL_STATIC_DRAW);
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 2, GL_FLOAT, false, 2 * Float.BYTES, 0);
 
+        // EBO
         ebo = glGenBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
@@ -111,7 +124,12 @@ public class CollisionBox {
         initialized = true;
     }
 
-    // modern debug render using provided shader and matrices
+    /**
+     * Render the collision box as a wireframe.
+     * @param shader The shader to use for rendering.
+     * @param view The view matrix.
+     * @param projection The projection matrix.
+     */
     public void render(renderer.Shader shader, Matrix4f view, Matrix4f projection) {
         ensureInitialized();
 
@@ -121,7 +139,6 @@ public class CollisionBox {
         shader.setMat4("model", model);
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
-        // set a visible color for the line shader (default red)
         shader.setVec3("color", color);
 
         glLineWidth(2.0f);

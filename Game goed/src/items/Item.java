@@ -12,11 +12,13 @@ public class Item {
     private String id, name, description, texture, rarity;
     private double weight, value;
     private JSONArray recipe;
+    private boolean placeable = false;
+    private String modelId = null;
 
     private BufferedImage imageCache = null;
     private int maxStackSize;
 
-    public Item(String id, String name, Integer maxStackSize, String description, String texture, double weight, double value, String rarity, JSONArray recipe) {
+    public Item(String id, String name, Integer maxStackSize, String description, String texture, double weight, double value, String rarity, JSONArray recipe, boolean placeable, String modelId) {
         this.id = id;
         this.name = name;
         this.maxStackSize = maxStackSize;
@@ -26,15 +28,20 @@ public class Item {
         this.value = value;
         this.rarity = rarity;
         this.recipe = recipe;
+        this.placeable = placeable;
+        this.modelId = modelId;
 
         try {
-            imageCache = ImageIO.read(new File(texture)); // texture is the path from JSON
+            imageCache = ImageIO.read(new File(texture));
         } catch (IOException e) {
             e.printStackTrace();
-            imageCache = null; // fallback if the image failed to load
+            imageCache = null;
         }
 
     }
+
+    public boolean isPlaceable() { return placeable; }
+    public String getModelId() { return modelId; }
 
     public String getId() { return id; }
     public String getName() { return name; }

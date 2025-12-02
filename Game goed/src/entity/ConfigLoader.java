@@ -18,7 +18,7 @@ import items.Stack;
 
 public class ConfigLoader {
 
-    private static final ModelHandler modelHandler = new ModelHandler();
+    public static final ModelHandler modelHandler = new ModelHandler();
 
     public static Model loadModel(String configPath, Shader shader, Vector3f position, Vector3f rotation) {
         try {
@@ -129,9 +129,6 @@ public class ConfigLoader {
         List<Stack> drops = new ArrayList<>();
         try {
             JSONObject json = resolveConfig(configPath);
-            // Support two formats for "drops":
-            // 1) Object mapping: { "itemId": {"min":1,"max":3,"chance":0.9}, ... }
-            // 2) Array list: [ {"itemType":"id","quantity":n}, ... ]
             java.lang.Object dropsNode = json.opt("drops");
             if (dropsNode instanceof JSONObject) {
                 JSONObject dropsObj = json.getJSONObject("drops");
@@ -164,16 +161,10 @@ public class ConfigLoader {
         return drops;
     }
 
-    /**
-     * Resolve a config JSON. If `configPath` points to a real file it is loaded directly.
-     * Otherwise we try to find an entry in `res/models/model_configs.json` whose `id`
-     * matches the filename (without extension) of `configPath`.
-     */
     private static JSONObject resolveConfig(String configPath) throws Exception {
         try (FileInputStream fis = new FileInputStream(configPath)) {
             return new JSONObject(new JSONTokener(fis));
         } catch (Exception e) {
-            // fallback to model_configs.json lookup by id (filename without extension)
             try (FileInputStream fis = new FileInputStream("res/models/model_configs.json")) {
                 JSONArray arr = new JSONArray(new JSONTokener(fis));
                 String fileName = Paths.get(configPath).getFileName().toString();

@@ -106,7 +106,7 @@ public class Object {
 
     public String[] getRequiredTools() {
         if (toolsRequired.length > 0) {
-            return toolsRequired; // assuming single tool requirement for simplicity
+            return toolsRequired;
         }
         return null;
     }

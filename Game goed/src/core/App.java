@@ -84,6 +84,9 @@ public class App {
         shader.setVec3("objectColor", new Vector3f(1, 1, 1));
         shader.unbind();
 
+        Object campfire = new Object("res/models/configs/campfire.json", shader, new Vector3f(2,0,2), new Vector3f(0,0,0));
+        addWorldObject(campfire);
+
         try {
             while (!glfwWindowShouldClose(window)) {
 
@@ -110,32 +113,39 @@ public class App {
                 100.0f
             );
 
-            player.render(viewMatrix, projectionMatrix);
-            mapHandler.render(viewMatrix, projectionMatrix);
-
-            for (Object obj : worldObjectList) {
-                if (obj == null) continue;
-                CollisionBox interactionBox = obj.getInteractionBox();
-                if (interactionBox == null) {
-                    obj.setInRange(false);
-                    continue;
+                // Render scene: player, map, and all world objects
+                player.render(viewMatrix, projectionMatrix);
+                mapHandler.render(viewMatrix, projectionMatrix);
+                for (Object worldObj : worldObjectList) {
+                    if (worldObj == null) continue;
+                    worldObj.render(viewMatrix, projectionMatrix);
                 }
 
-                boolean collision = CollisionHandler.checkCollision(
-                    player.getCollisionBox(),
-                    List.of(interactionBox)
-                );
+                // Interaction / collision checks for world objects
+                for (Object obj : worldObjectList) {
+                    if (obj == null) continue;
+                    CollisionBox interactionBox = obj.getInteractionBox();
+                    if (interactionBox == null) {
+                        obj.setInRange(false);
+                        continue;
+                    }
 
-                if (collision) {
-                    interactionBox.setColor(new Vector3f(0f,1f,0f));
-                    obj.setInRange(true);
-                } else {
-                    interactionBox.setColor(new Vector3f(1f,0f,0f));
-                    obj.setInRange(false);
+                    boolean collision = CollisionHandler.checkCollision(
+                        player.getCollisionBox(),
+                        List.of(interactionBox)
+                    );
+
+                    if (collision) {
+                        interactionBox.setColor(new Vector3f(0f,1f,0f));
+                        obj.setInRange(true);
+                    } else {
+                        interactionBox.setColor(new Vector3f(1f,0f,0f));
+                        obj.setInRange(false);
+                    }
                 }
-            }
 
             glDisable(GL_DEPTH_TEST);
+            
             // render debug lines for world objects
             // for (Object obj : worldObjectList) {
             //     if (obj == null) continue;

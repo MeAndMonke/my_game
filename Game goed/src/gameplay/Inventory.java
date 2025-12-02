@@ -17,13 +17,13 @@ public class Inventory {
 
     public Inventory(Player player) {
         this.player = player;
-        // initialize fixed-size inventory
         for (int i = 0; i < slotCount; i++) items.add(null);
         uiInventory = new UIInventory(slotCount, this);
     }
 
+    public UIInventory getUIInventory() { return uiInventory; }
+
     public void addItem(Stack stack) {
-        // try to merge into existing stacks first
         for (int i = 0; i < items.size(); i++) {
             Stack s = items.get(i);
             if (s != null && s.getItemId().equals(stack.getItemId())) {
@@ -37,18 +37,19 @@ public class Inventory {
                 }
             }
         }
-        // place leftover into first empty slot
         for (int i = 0; i < items.size(); i++) {
             if (items.get(i) == null) {
                 items.set(i, stack);
                 return;
             }
         }
-        // inventory full: drop or ignore (currently ignore)
     }
 
     /**
-     * Returns true if the inventory contains at least `qty` of `itemId`.
+     * Check if the inventory has at least the specified quantity of an item.
+     * @param itemId ID of the item to check.
+     * @param qty Quantity to check for.
+     * @return True if the inventory has at least the specified quantity.
      */
     public boolean hasItemQuantity(String itemId, int qty) {
         int found = 0;
@@ -61,7 +62,10 @@ public class Inventory {
     }
 
     /**
-     * Remove `qty` items with `itemId` from inventory. Returns true if fully removed.
+     * Remove a quantity of an item from the inventory.
+     * @param itemId ID of the item to remove.
+     * @param qty Quantity to remove.
+     * @return True if the specified quantity was successfully removed.
      */
     public boolean removeItemQuantity(String itemId, int qty) {
         int remaining = qty;
@@ -92,7 +96,10 @@ public class Inventory {
         }
     }
 
-
+    /**
+     * Remove an item stack from the inventory.
+     * @param stack The item stack to remove.
+     */
     public void removeItem(Stack stack) {
         items.remove(stack);
     }

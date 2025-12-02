@@ -34,7 +34,9 @@ public class ItemManager {
                     obj.getDouble("weight"),
                     obj.getDouble("value"),
                     obj.getString("rarity"),
-                    obj.optJSONArray("recipe")
+                    obj.optJSONArray("recipe"),
+                    obj.optBoolean("placeable", false),
+                    obj.optString("modelId", null)
                 );
                 items.add(item);
             }

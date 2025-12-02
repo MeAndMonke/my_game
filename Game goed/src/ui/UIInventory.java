@@ -145,7 +145,7 @@ public class UIInventory extends UIElement {
                             if (space >= heldStack.getAmount()) {
                                 hot.setQuantity(hot.getAmount() + heldStack.getAmount());
                                 if (inventory != null) {
-                                    // update hotbar slot in inventory if needed
+                                    hotbar.setItemInSlot(i, hot);
                                 }
                                 heldStack = null;
                             } else if (space > 0) {
@@ -248,6 +248,9 @@ public class UIInventory extends UIElement {
     public void onClick(double mx, double my) {
         return;
     }
+
+    public items.Stack getHeldStack() { return heldStack; }
+    public void setHeldStack(items.Stack s) { heldStack = s; }
 
     @Override
     public void render() {

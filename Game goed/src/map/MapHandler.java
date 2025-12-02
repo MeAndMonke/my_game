@@ -42,12 +42,24 @@ public class MapHandler {
         }
     }
 
+    /**
+     * Create a new object in the world.
+     * @param configPath Path to the objects configuration file.
+     * @param position Position to place the object.
+     * @param rotation Rotation of the object.
+     * @return The created object.
+     */
     private Object createObject(String configPath, Vector3f position, Vector3f rotation) {
         Object tree =  new Object(configPath, shader, position, rotation);
         App.addWorldObject(tree);
         return tree;
     }
 
+    /**
+     * Render all map objects.
+     * @param viewMatrix View matrix for rendering.
+     * @param projectionMatrix Projection matrix for rendering.
+     */
     public void render(Matrix4f viewMatrix, Matrix4f projectionMatrix) {
         for (int x = 0; x < mapObjects.length; x++) {
             for (int z = 0; z < mapObjects[0].length; z++) {
@@ -59,6 +71,10 @@ public class MapHandler {
         }
     }
 
+    /**
+     * Remove an object from the map.
+     * @param obj The object to remove.
+     */
     public void removeObject(Object obj) {
         if (obj == null) return;
         for (int x = 0; x < mapObjects.length; x++) {

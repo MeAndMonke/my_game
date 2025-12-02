@@ -88,6 +88,14 @@ public abstract class UIElement {
         glDeleteTextures(texId);
     }
 
+    /**
+     * Draw a BufferedImage at specified position and size.
+     * @param image The image to draw.
+     * @param x The x position.
+     * @param y The y position.
+     * @param w The width to draw.
+     * @param h The height to draw.
+     */
     public void drawImage(BufferedImage image, float x, float y, float w, float h) {
         int imgWidth = image.getWidth();
         int imgHeight = image.getHeight();
@@ -118,6 +126,7 @@ public abstract class UIElement {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glColor3f(1f, 1f, 1f);
 
+        // Draw quad
         glBegin(GL_QUADS);
             glTexCoord2f(0f, 0f); glVertex2f(x, y);
             glTexCoord2f(1f, 0f); glVertex2f(x + w, y);
@@ -125,6 +134,7 @@ public abstract class UIElement {
             glTexCoord2f(0f, 1f); glVertex2f(x, y + h);
         glEnd();
 
+        // Cleanup
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_BLEND);
         glBindTexture(GL_TEXTURE_2D, 0);

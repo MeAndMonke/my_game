@@ -3,6 +3,7 @@ package gameplay;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +33,10 @@ public class CraftingManager {
         loadRecipes(itemsJsonPath);
     }
 
+    /**
+     * Loads crafting recipes from a JSON file.
+     * @param path Path to the JSON file containing recipes.
+     */
     private void loadRecipes(String path) {
         try (FileInputStream fis = new FileInputStream(path)) {
             JSONArray arr = new JSONArray(new JSONTokener(fis));
@@ -56,6 +61,9 @@ public class CraftingManager {
         }
     }
 
+    /**
+     * @return List of all loaded recipes.
+     */
     public List<Recipe> getRecipes() { return recipes; }
 
     public boolean canCraft(Inventory inv, Recipe r, int playerLevel) {
@@ -68,14 +76,18 @@ public class CraftingManager {
         return true;
     }
 
+    /**
+     * Crafts an item if the inventory has the required ingredients.
+     * @param inv The players inventory.
+     * @param r The recipe to craft.
+     * @return True if crafting was successful.
+     */
     public boolean craft(Inventory inv, Recipe r) {
-        // remove ingredients
         for (Map.Entry<String,Integer> e : r.ingredients.entrySet()) {
             if (!inv.removeItemQuantity(e.getKey(), e.getValue())) {
-                return false; // failed to remove; should not happen if canCraft checked
+                return false;
             }
         }
-        // add crafted item (quantity 1)
         inv.addItem(new items.Stack(r.id, 1));
         return true;
     }

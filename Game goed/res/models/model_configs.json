@@ -8,6 +8,30 @@
         "speed": 1
     },
     {
+        "id": "deer",
+        "modelPath": "res/models/objects/deer.obj",
+        "collisionPath": "res/models/collision/deer.json",
+        "texturePath": "res/textures/deer_texture.jpg",
+        "scale": 0.8,
+        "speed": 0.6,
+        "actions": {
+            "wander": {
+                "chance": 0.7,
+                "minDistance": 5,
+                "maxDistance": 15
+            },
+            "flee": {
+                "triggerDistance": 4,
+                "duration": 5,
+                "speedMultiplier": 2,
+                "entitys": [
+                    "player"
+                ]
+            
+            }
+        }
+    },
+    {
         "id": "rock",
         "modelPath": "res/models/objects/rock/LargeStone.obj",
         "collisionPath": "res/models/collision/rock.json",
@@ -49,5 +73,14 @@
                 "chance": 0.75
             }
         }
+    },
+    {
+        "id": "campfire",
+        "modelPath": "res/models/objects/campfire.obj",
+        "collisionPath": "res/models/collision/campfire.json",
+        "texturePath": "res/textures/campfire.png",
+        "scale": 0.5,
+        "interactable": true,
+        "interactableType": "usable"
     }
 ]
