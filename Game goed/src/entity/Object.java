@@ -37,11 +37,11 @@ public class Object {
 
     private void loadConfigData(String configPath, Shader shader) {
         this.model = ConfigLoader.loadModel(configPath, shader, position, rotation);
-        this.collisionBox = ConfigLoader.loadCollisionBox(ConfigLoader.getCollisionPath(configPath), position);
+        this.collisionBox = ConfigLoader.loadCollisionBoxFromConfig(configPath, position);
         this.interactable = ConfigLoader.getInteractable(configPath);
 
         if (interactable) {
-            this.interactionBox = ConfigLoader.loadInteractionBox(ConfigLoader.getCollisionPath(configPath), position);
+            this.interactionBox = ConfigLoader.loadInteractionBoxFromConfig(configPath, position);
         }
 
 

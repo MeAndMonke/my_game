@@ -201,7 +201,7 @@ public class Player extends Entity {
         float yaw = getRotation().y;
         float rad = (float)Math.toRadians(yaw);
         Vector3f forward = new Vector3f((float)Math.sin(rad), 0f, (float)Math.cos(rad));
-        Vector3f pos = new Vector3f(getPosition()).add(new Vector3f(forward).mul(2f));
+        Vector3f pos = new Vector3f(getPosition()).add(new Vector3f(forward).mul(1.2f));
         pos.y = 0f;
         return pos;
     }

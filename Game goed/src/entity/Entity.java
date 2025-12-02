@@ -61,6 +61,6 @@ public class Entity {
 
     private void loadConfigData(String configPath, Shader shader) {
         this.model = ConfigLoader.loadModel(configPath, shader, position, rotation);
-        this.collisionBox = ConfigLoader.loadCollisionBox(ConfigLoader.getCollisionPath(configPath), position);
+        this.collisionBox = ConfigLoader.loadCollisionBoxFromConfig(configPath, position);
     }
 }

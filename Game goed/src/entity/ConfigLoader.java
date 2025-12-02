@@ -52,6 +52,31 @@ public class ConfigLoader {
         }
     }
 
+    // New: load collision directly from the model config (embedded collision object)
+    public static CollisionBox loadCollisionBoxFromConfig(String configPath, Vector3f position) {
+        try {
+            JSONObject json = resolveConfig(configPath);
+
+            JSONObject coll = json.optJSONObject("collision");
+            if (coll != null) {
+                float width = coll.optFloat("width", 1.0f);
+                float height = coll.optFloat("height", 1.0f);
+                float offsetX = coll.optFloat("offsetX", 0f);
+                float offsetY = coll.optFloat("offsetY", 0f);
+                return new CollisionBox(position, width, height, offsetX, offsetY);
+            }
+
+            // Fallback: if the model config references an external collision path, use it
+            String collisionPath = json.optString("collisionPath", null);
+            if (collisionPath != null && !collisionPath.isEmpty()) {
+                return loadCollisionBox(collisionPath, position);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static String getCollisionPath(String configPath) {
         try {
             JSONObject json = resolveConfig(configPath);
@@ -113,6 +138,32 @@ public class ConfigLoader {
             e.printStackTrace();
             return null;
         }
+    }
+
+    // New: load interaction box from the model config's embedded collision object
+    public static CollisionBox loadInteractionBoxFromConfig(String configPath, Vector3f position) {
+        try {
+            JSONObject json = resolveConfig(configPath);
+
+            JSONObject coll = json.optJSONObject("collision");
+            if (coll != null) {
+                float interactionWidth = coll.optFloat("interactionWidth", 0f);
+                float width = coll.optFloat("width", 1.0f);
+                float height = coll.optFloat("height", 1.0f);
+                float offsetX = coll.optFloat("offsetX", 0f);
+                float offsetY = coll.optFloat("offsetY", 0f);
+                return new CollisionBox(position, width + interactionWidth, height + interactionWidth, offsetX, offsetY);
+            }
+
+            // Fallback to external collision path if present
+            String collisionPath = json.optString("collisionPath", null);
+            if (collisionPath != null && !collisionPath.isEmpty()) {
+                return loadInteractionBox(collisionPath, position);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static float getScale(String configPath) {
