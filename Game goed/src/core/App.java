@@ -69,9 +69,9 @@ public class App {
         String fragmentShaderCode = loadShaderSource("res/shaders/default.frag");
         Shader shader = new Shader(vertexShaderCode, fragmentShaderCode);
         
-        String lineVert = loadShaderSource("res/shaders/line.vert");
-        String lineFrag = loadShaderSource("res/shaders/line.frag");
-        Shader lineShader = new Shader(lineVert, lineFrag);
+        // String lineVert = loadShaderSource("res/shaders/line.vert");
+        // String lineFrag = loadShaderSource("res/shaders/line.frag");
+        // Shader lineShader = new Shader(lineVert, lineFrag);
 
         mapHandler = new MapHandler(30, 30, shader);
         player = new Player(new Vector3f(15,0,15), shader);
@@ -106,40 +106,40 @@ public class App {
             Matrix4f projectionMatrix = new Matrix4f().perspective(
                 (float)Math.toRadians(60.0f),
                 (float)width / height,
-                0.1f,
+                0.01f,
                 100.0f
             );
 
-                // Render scene: player, map, and all world objects
-                player.render(viewMatrix, projectionMatrix);
-                mapHandler.render(viewMatrix, projectionMatrix);
-                for (Object worldObj : worldObjectList) {
-                    if (worldObj == null) continue;
-                    worldObj.render(viewMatrix, projectionMatrix);
+            // render player, map, and all world objects
+            player.render(viewMatrix, projectionMatrix);
+            mapHandler.render(viewMatrix, projectionMatrix);
+            for (Object worldObj : worldObjectList) {
+                if (worldObj == null) continue;
+                worldObj.render(viewMatrix, projectionMatrix);
+            }
+
+            // interaction / collision checks for world objects
+            for (Object obj : worldObjectList) {
+                if (obj == null) continue;
+                CollisionBox interactionBox = obj.getInteractionBox();
+                if (interactionBox == null) {
+                    obj.setInRange(false);
+                    continue;
                 }
 
-                // Interaction / collision checks for world objects
-                for (Object obj : worldObjectList) {
-                    if (obj == null) continue;
-                    CollisionBox interactionBox = obj.getInteractionBox();
-                    if (interactionBox == null) {
-                        obj.setInRange(false);
-                        continue;
-                    }
+                boolean collision = CollisionHandler.checkCollision(
+                    player.getCollisionBox(),
+                    List.of(interactionBox)
+                );
 
-                    boolean collision = CollisionHandler.checkCollision(
-                        player.getCollisionBox(),
-                        List.of(interactionBox)
-                    );
-
-                    if (collision) {
-                        interactionBox.setColor(new Vector3f(0f,1f,0f));
-                        obj.setInRange(true);
-                    } else {
-                        interactionBox.setColor(new Vector3f(1f,0f,0f));
-                        obj.setInRange(false);
-                    }
+                if (collision) {
+                    interactionBox.setColor(new Vector3f(0f,1f,0f));
+                    obj.setInRange(true);
+                } else {
+                    interactionBox.setColor(new Vector3f(1f,0f,0f));
+                    obj.setInRange(false);
                 }
+            }
 
             // glDisable(GL_DEPTH_TEST);
             
@@ -173,6 +173,7 @@ public class App {
             glPushMatrix();
             glLoadIdentity();
 
+            // render ui
             player.renderUI();
 
             // restore 3D
@@ -184,8 +185,8 @@ public class App {
 
             glEnable(GL_DEPTH_TEST);
 
-                glfwSwapBuffers(window);
-                glfwPollEvents();
+            glfwSwapBuffers(window);
+            glfwPollEvents();
 
             }
         } finally {

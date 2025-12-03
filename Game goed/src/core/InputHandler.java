@@ -56,7 +56,7 @@ public class InputHandler {
     public boolean isKeyPressed(int key) {
         Boolean pressed = keyDown.get(key);
         if (pressed != null && pressed) {
-            keyDown.put(key, false); // reset the state
+            keyDown.put(key, false); // reset state
             return true;
         }
         return false;
