@@ -9,7 +9,6 @@ public class InputHandler {
 
     private final Map<Integer, Boolean> keyDown = new HashMap<>();
     private final Map<Integer, Boolean> mouseDown = new HashMap<>();
-
     private long window;
 
     public InputHandler(long window) {
