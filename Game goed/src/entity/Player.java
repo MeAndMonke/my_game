@@ -48,7 +48,7 @@ public class Player extends Entity {
         this.inventory = new Inventory(this);
         uiManager.addInventory(inventory);
 
-        gameplay.CraftingManager craftingManager = new gameplay.CraftingManager("res/items/items.json");
+        gameplay.CraftingManager craftingManager = new gameplay.CraftingManager("res/items.json");
         uiManager.add(new ui.UICrafting(craftingManager, inventory, this, uiManager));
         uiManager.add(new ui.UICraftItem(craftingManager, inventory, this, uiManager));
 

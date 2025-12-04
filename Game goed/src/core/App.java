@@ -40,7 +40,7 @@ public class App {
     private static Vector3f cameraOffset = new Vector3f(0, 5, 1);
     private static Player player;
     
-    public static ItemManager itemManager = new ItemManager("res/items/items.json");
+    public static ItemManager itemManager = new ItemManager("res/items.json");
 
     private static void initWindow() {
         if (!glfwInit()) throw new IllegalStateException("Unable to initialize GLFW");
